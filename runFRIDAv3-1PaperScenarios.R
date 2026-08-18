@@ -1,3 +1,4 @@
+homeWD <- getwd()
 numSample <- "100000"
 expIDprePreString <- 'UA-v3_1-paper'
 likeCutoffRatio <- 1000
@@ -96,10 +97,10 @@ if(file.exists(statusFile)){
 cat(sprintf('EMB status: %s\n',status))
 if(status=='not started'){
 	system(scenarios[[scenarioName]]$call)
-	setwd(figWD)
+	setwd(homeWD)
 	stop(sprintf('Scenario %s run has been submitted to SLURM, please restart this script once the baseline run has completed\n',scenarioName))
 }
-setwd(figWD)
+setwd(homeWD)
 if(status=='failed'){
 	stop('Baseline run has failed, please check the LOG and then delete the status file\n')
 } else if(status!='completed'){
@@ -138,7 +139,7 @@ for(scenarioName in names(scenarios)){
 		cat(sprintf('Scenario %s run is %s.\n',scenarioName,statuses[scenarioName]))
 	}
 }
-setwd(figWD)
+setwd(homeWD)
 if(sum(statuses=='completed')==length(statuses)){
 	cat('All runs completed continuing.\n')
 } else {
