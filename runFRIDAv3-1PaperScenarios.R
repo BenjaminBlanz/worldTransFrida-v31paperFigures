@@ -1,11 +1,11 @@
 homeWD <- getwd()
 numSample <- "100000"
-expIDprePreString <- 'UA-v3_1-paper'
+expIDprePreString <- 'UA-v3-1-2026-08-18'
 likeCutoffRatio <- 1000
 
 varNameExtra <- '-fit uncertainty-completeEqually-weighted.RDS'
 commonDirStringBit <- '-ClimateFeedback_On-ClimateSTAOverride_Off'
-uncertaintyWD <- '/home/benjamin/mnt/levante/work/uc1275/u244021/WorldTransFrida-Uncertainty-main/'
+uncertaintyWD <- '/work/uc1275/u244021/WorldTransFrida-Uncertainty-FRIDA-development/'
 dataLocation <- file.path(uncertaintyWD,'workOutput')
 
 scenario_files <- list.files("ScenarioFiles", pattern = "\\.csv$", full.names = TRUE)
@@ -45,7 +45,7 @@ for (scenario_file in scenario_files) {
   	call=paste('./submit_UncertaintyAnalysisLevante.sh',
   						 '-n',numSample,
   						 '-h',7,
-  						 '--pol',paste0(policy,'.csv'),
+  						 '--pol',paste0(scenario_name,'.csv'),
   						 '--cfb','ClimateFeedback_On.csv',
   						 '--sta','ClimateSTAOverride_Off.csv',
   						 '-s',expIDprePreString,
