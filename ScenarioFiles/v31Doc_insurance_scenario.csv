@@ -1,0 +1,7 @@
+﻿Government_Regulations.decision fraction of default covered by private insurance,1
+Government_Regulations.decision fraction of default covered by central bank insurance,1
+Government_Regulations.decision fraction of default covered by government insurance,1
+Government_Regulations.insurance coverage start year,2030
+Government_Regulations.insurance coverage level,70
+"Government_Regulations.insurance coverage time
+to implement",10
