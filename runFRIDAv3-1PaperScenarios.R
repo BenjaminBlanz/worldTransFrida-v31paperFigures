@@ -33,31 +33,6 @@ scenarios <- list(
 	)
 )
 
-for(p.i in 1:length(policy_beauty_names)){
-	policy <- policies[p.i]
-	scenarios[[policy]] <- list(
-		beauty_name =  policy_beauty_names[p.i],
-		dir=paste0(expIDprePreString,
-							 '-S',numSample,'-',policy,
-							 commonDirStringBit),
-		col=p.i,#palette('Set2')[p.i],
-		areaCol=p.i,#palette('Pastel2')[p.i],
-		lty=1,
-		call=paste('./submit_UncertaintyAnalysisLevante.sh',
-							 '-n',numSample,
-							 '-h',7,
-							 '--pol',paste0(policy,'.csv'),
-							 '--cfb','ClimateFeedback_On.csv',
-							 '--sta','ClimateSTAOverride_Off.csv',
-							 '-s',expIDprePreString,
-							 '--outputType','RDS',
-							 '--sym','Min',
-							 '--cpps','true',
-							 '--cpsp','true',
-							 '--cid',scenarios[['EMB']]$dir)
-	)
-}
-
 for (scenario_file in scenario_files) {
   file_path <- scenario_file
   file_name <- basename(scenario_file)
