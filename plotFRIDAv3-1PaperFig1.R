@@ -1,4 +1,5 @@
 source('config.R')
+source('plotOverlayedRunsFun.R')
 
 # overlay config ####
 dataFolders  <- c(
@@ -23,7 +24,7 @@ varsToPlot <- list(
 	),
 	demographics_real_gdp_per_person = list(
 		name  = 'GDP per Person',
-		unit  = 'constant 2021 intl. $ per person',
+		unit  = 'thsnd. 2021 intl. $ / person',
 		scale = 1,
 		ylim  = c(0,120)
 	),
@@ -31,26 +32,25 @@ varsToPlot <- list(
 		name  = 'Population',
 		unit  = 'billion people',
 		scale = 1e-3,
-		ylim  = c(7,12)*1e3
+		ylim  = c(0,12)*1e3
 	),
 	land_use_cropland = list(
 		name  = 'Cropland',
 		unit  = 'MHa',
 		scale = 1,
-		ylim  = c(1000,3000)
+		ylim  = c(0,5000)
 	),
 	land_use_forest_land = list(
 		name  = 'Forest Land',
 		unit  = 'MHa',
 		scale = 1,
-		ylim  = c(2500,4500)
+		ylim  = c(0,5000)
 	),
 	land_use_grassland = list(
 		name  = 'Grassland',
 		unit  = 'MHa',
 		scale = 1,
-		ylim  = c(3000,4000),
-		nTicks = 5
+		ylim  = c(0,5000)
 	),
 	energy_demand_demand_for_energy = list(
 		name  = 'Energy Demand',
@@ -62,97 +62,10 @@ varsToPlot <- list(
 		name  = 'Fertilizer Use',
 		unit  = 'MtN/year',
 		scale = 1,
-		ylim  = c(0,400),
-		nTicks = 5
+		ylim  = c(0,400)#,
+		# nTicks = 5
 	)
 )
-
-# plot fun ####
-plotOverlayedRuns <- function(folders, colors, varName, CIsToPlot,
-															drawMedian=TRUE, titlePrepend='',
-															xlab='Year', xlim=NULL, ylim=NULL, drawCIOutline=TRUE, ...) {
-	varData <- lapply(folders, function(f) {
-		readRDS(file.path(f, paste0(varName, varNameExtra)))
-	})
-
-	# determine axis limits from first folder's data
-	if (is.null(xlim)) {
-		xlim <- as.numeric(range(varData[[1]]$years))
-	}
-	if (is.null(ylim)) {
-		if (is.null(varsToPlot[[varName]]$ylim)) {
-			allBounds <- do.call(rbind, lapply(varData, `[[`, 'ciBounds'))
-			ylim <- as.numeric(range(allBounds, na.rm=TRUE)) * varsToPlot[[varName]]$scale
-		} else {
-			ylim <- varsToPlot[[varName]]$ylim * varsToPlot[[varName]]$scale
-		}
-	}
-
-	plot(0, 0, type='n', xlab=xlab, ylab=varsToPlot[[varName]]$unit,
-			 xlim=xlim, ylim=ylim,
-			 main=paste0(titlePrepend, varsToPlot[[varName]]$name),
-			 xaxs='i', yaxs='i', xaxt='n', yaxt='n')
-	grid()
-	box()
-	abline(h=0, col='gray')
-	ax <- axTicks(1)
-	axis(1, at=ax, labels=FALSE)
-	axis(1, at=ax[-c(1, length(ax))], tick=FALSE)
-	axis(1, at=ax[1],          labels=ax[1],          tick=FALSE, hadj=0)
-	axis(1, at=ax[length(ax)], labels=ax[length(ax)], tick=FALSE, hadj=1)
-	nTicks <- varsToPlot[[varName]]$nTicks
-	ay <- if (is.null(nTicks)) axTicks(2) else seq(par('usr')[3], par('usr')[4], 
-																								 length.out=nTicks)
-	axis(2, at=ay, labels=ay, gap.axis=0)
-
-	# filled CI bands
-	for (o.i in seq_along(folders)) {
-		dat <- varData[[o.i]]
-		for (CItoPlot.i in seq_along(CIsToPlot)) {
-			CItoPlot  <- CIsToPlot[CItoPlot.i]
-			CIboundQs <- c((1-CItoPlot)/2, 1-(1-CItoPlot)/2)
-			varLength <- nrow(dat$ciBounds)
-			polygon(
-				x = c(-9999, dat$years, 9999, 9999, rev(dat$years), -9999),
-				y = c(dat$ciBounds[, as.character(CIboundQs[1])][c(1, 1:varLength, varLength)],
-							rev(dat$ciBounds[, as.character(CIboundQs[2])])[c(1, 1:varLength, varLength)]) * varsToPlot[[varName]]$scale,
-				col    = adjustcolor(colors[o.i], alpha.f=0.2/CItoPlot.i),
-				border = NA,
-				lwd    = lwd/2
-			)
-		}
-	}
-
-	# CI outlines
-	if (drawCIOutline) {
-		for (o.i in seq_along(folders)) {
-			dat <- varData[[o.i]]
-			for (CItoPlot.i in seq_along(CIsToPlot)) {
-				CItoPlot  <- CIsToPlot[CItoPlot.i]
-				CIboundQs <- c((1-CItoPlot)/2, 1-(1-CItoPlot)/2)
-				varLength <- nrow(dat$ciBounds)
-				polygon(
-					x = c(-9999, dat$years, 9999, 9999, rev(dat$years), -9999),
-					y = c(dat$ciBounds[, as.character(CIboundQs[1])][c(1, 1:varLength, varLength)],
-								rev(dat$ciBounds[, as.character(CIboundQs[2])])[c(1, 1:varLength, varLength)]) * varsToPlot[[varName]]$scale,
-					col    = NA,
-					border = adjustcolor(colors[o.i], alpha.f=1/CItoPlot.i),
-					lwd    = lwd/2/CItoPlot.i
-				)
-			}
-		}
-	}
-
-	# medians
-	if (drawMedian) {
-		for (o.i in seq_along(folders)) {
-			dat <- varData[[o.i]]
-			lines(dat$years,
-						dat$ciBounds[, '0.5'] * varsToPlot[[varName]]$scale,
-						lwd=lwd, col=adjustcolor(colors[o.i], alpha.f=1))
-		}
-	}
-}
 
 # joint plot ####
 cat('Plotting Figure 1\n')

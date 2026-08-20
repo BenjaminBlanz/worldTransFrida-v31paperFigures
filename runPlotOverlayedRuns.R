@@ -1,0 +1,253 @@
+# this script can overlay an arbitrary number of different run ensembles. 
+# uses output of the runPlotAllRuns script, so that has to be run first for each 
+# overlayed ensemble
+
+source('initialise.R')
+source('config.R')
+alsoPlotMean <- F
+alsoPlotDefaultRun <- T
+# specify output folders
+dataForOverlayedFiguresFolders <- c('/home/benjamin/mnt/levante/work/mh0033/b383346/Legacy_WorldTransFrida-Uncertainty/workOutput/UA_EMBv6Try2_nS100000/figures/CI-plots/completeEquallyWeighted/plotData/',
+																		'/home/benjamin/mnt/levante/work/uc1275/u244021/WorldTransFrida-Uncertainty-FRIDA-development/workOutput/UA-v3-1-2026-08-18-S100000-policy_EMB-ClimateFeedback_On-ClimateSTAOverride_Off/figures/CI-plots/completeEquallyWeighted/plotData/')
+overlayColors <- c('black','blue')
+overlayNames <- c('v2.1','v3.1')
+
+location.plots <- file.path('workOutput','overlayed',paste0(overlayNames,collapse='-'))
+
+# just for plot specification
+plotWeightType <- 'completeEqually'
+
+# For specialised overlayed figures:
+# prepare folder structure such that folders for each of the names exist, with only a single file contained
+# then uncomment sections for the individual figues into runPlotOverlayRuns above everything
+# this will eventually become a more streamlined process, outomatically picking the diesired files...
+
+# Jeff's Fig 1
+# extraTitle <- 'fig 1'
+# overlayNames <- c('Desired Animal Products Demand from Accessibility','Desired Animal Products Demand from Descriptive Norm',
+# 									'Desired Animal Products Demand from Personal Norm')
+# dataForOverlayedFiguresFolders <- paste0('workOutput/jeffsFigures/',extraTitle,'/',overlayNames)
+# overlayColors <- c('black','blue','red')
+
+# Jeff's Fig 2
+# extraTitle <- 'fig 2'
+# overlayNames <- c('Desired Food Demand from Accessibility',
+# 									'Desired Food Demand from Descriptive Norm',
+# 									'Desired Food Demand from Personal Norm')
+# dataForOverlayedFiguresFolders <- paste0('workOutput/jeffsFigures/',extraTitle,'/',overlayNames)
+# overlayColors <- c('black','blue','red')
+
+# Jeff's Fig 3
+# extraTitle <- 'fig 3 climate extremes'
+# overlayNames <- c('Perceived Exposure',
+# 									'Reference Normal Exposure')
+# dataForOverlayedFiguresFolders <- paste0('workOutput/jeffsFigures/',extraTitle,'/',overlayNames)
+# overlayColors <- c('black','blue')
+
+# Jeff's Fig 4
+# extraTitle <- 'fig 4 slr flooding'
+# overlayNames <- c('Perceived Exposure',
+# 									'Reference Normal Exposure')
+# dataForOverlayedFiguresFolders <- paste0('workOutput/jeffsFigures/',extraTitle,'/',overlayNames)
+# overlayColors <- c('black','blue')
+
+# Jeff's Fig 5
+# extraTitle <- 'fig 5 sta'
+# overlayNames <- c('Perceived Exposure',
+# 									'Reference Normal Exposure')
+# dataForOverlayedFiguresFolders <- paste0('workOutput/jeffsFigures/',extraTitle,'/',overlayNames)
+# overlayColors <- c('black','blue')
+
+# Jeff's Fig 6
+# Could you please help me overlay 
+# food demand.animal product demand per person per day (GDP driven) 
+# with 
+# animal product demand.average daily demand per capita (EMB). 
+# This would include the calibration data.
+# extraTitle <- 'fig 6 food demand'
+# overlayNames <- c('animal product demand per person per day (GDP driven)',
+# 									'average daily demand per capita (EMB)')
+# dataForOverlayedFiguresFolders <- paste0('workOutput/jeffsFigures/',extraTitle,'/',overlayNames)
+# overlayColors <- c('black','blue')
+
+
+dir.create(location.plots,F,T)
+writeLines(paste(c('data for overalyed plots',
+									 paste(overlayNames,dataForOverlayedFiguresFolders))),
+					 file.path(location.plots,'metadata.txt'))
+
+# --- startup summary ---
+cat('=== runPlotOverlayedRuns ===\n')
+cat(sprintf('Output folder : %s\n', location.plots))
+cat(sprintf('Overlaying %i ensemble(s):\n', length(overlayNames)))
+for(o.i in seq_along(overlayNames)){
+	folderExists <- dir.exists(dataForOverlayedFiguresFolders[o.i])
+	cat(sprintf('  [%i] %-20s  %s  %s\n',
+							o.i, overlayNames[o.i],
+							dataForOverlayedFiguresFolders[o.i],
+							ifelse(folderExists, '(found)', '*** FOLDER NOT FOUND ***')))
+}
+cat('---------------------------\n')
+
+file.i    <- 0
+n.plotted <- 0
+n.skipped <- 0
+files <- list.files(dataForOverlayedFiguresFolders[1],pattern = '*RDS')
+cat(sprintf('Found %i RDS file(s) in reference folder.\n\n', length(files)))
+
+# loop-invariant: depend only on config, not on per-file data
+ciBoundQs <- unique(c(rev((1-CIsToPlot)/2),1-(1-CIsToPlot)/2))
+ciBoundQs.lty <- c(rev(CIsToPlot.lty),CIsToPlot.lty[-1])
+ciBoundQs.lwd <- c(rev(CIsToPlot.lwd),CIsToPlot.lwd[-1])
+ciBoundQs.lcol <- c(rev(CIsToPlot.lcol),CIsToPlot.lcol[-1])
+medianQIdx <- which(ciBoundQs==0.5)
+# brighter versions of each overlay colour for default-run lines
+def.cols <- sapply(overlayColors, function(col) {
+	h <- rgb2hsv(col2rgb(col))
+	hsv(h[1], max(0, h[2] - 0.3), min(1, h[3] * 1.4 + 0.3))
+})
+
+for(file in files){
+	file.i <- file.i +1
+	cat(sprintf('(%i/%i) %s ... ', file.i, length(files), file))
+	fileExists <- file.exists(file.path(dataForOverlayedFiguresFolders,file))
+	if(sum(fileExists)==length(dataForOverlayedFiguresFolders)){
+		varName <- tools::file_path_sans_ext(file)
+		png(file.path(location.plots,paste0(varName,'.png')),
+				width = plotWidth,height = plotHeight,units = plotUnit,res = plotRes)
+		plotData.lst <- list()
+		for(o.i in 1:length(dataForOverlayedFiguresFolders)){
+			plotData.lst[[o.i]] <- readRDS(file.path(dataForOverlayedFiguresFolders[o.i],file))
+		}
+		plotData <- plotData.lst[[1]]
+		years <- plotData$years
+		uncertaintyType <- plotData$uncertaintyType
+		ciBounds <- plotData$ciBounds
+		varName.orig <- plotData$varName.orig
+		layout(matrix(c(3,2,1),nrow=3),heights = c(0.9,0.05,0.04))
+		par(mar=c(0,0,0,0))
+		plot(0,0,type='n',axes=F)
+		legend.text=c(
+			if(alsoPlotMean&&uncertaintyType!='noise uncertainty'){'mean'},
+			if(alsoPlotDefaultRun){paste('frida default', overlayNames)},
+			'median',
+			paste0(CIsToPlot[-1]*100,'% CI'),
+			'Data')
+		legend.lty=c(
+			if(alsoPlotMean&&uncertaintyType!='noise uncertainty'){mean.lty},
+			if(alsoPlotDefaultRun){rep(def.lty, length(overlayNames))},
+			CIsToPlot.lty,
+			NA)
+		legend.lwd=c(
+			if(alsoPlotMean&&uncertaintyType!='noise uncertainty'){mean.lwd},
+			if(alsoPlotDefaultRun){rep(def.lwd, length(overlayNames))},
+			CIsToPlot.lwd,
+			NA)
+		legend.pch=c(rep(NA,length(CIsToPlot)+
+										 	sum(c(alsoPlotMean&uncertaintyType!='noise uncertainty',FALSE))+
+										 	ifelse(alsoPlotDefaultRun, length(overlayNames), 0)),20)
+		legend.col = c(
+			if(alsoPlotMean&&uncertaintyType!='noise uncertainty'){mean.col},
+			if(alsoPlotDefaultRun){def.cols},
+			CIsToPlot.lcol,
+			calDat.col)
+		legend('bottom',legend.text,lty=legend.lty,lwd=legend.lwd,pch=legend.pch,col=legend.col,
+					 horiz=T,xpd=T)
+		par(mar=c(0,0,0,0))
+		plot(0,0,type='n',axes=F)
+		legend('bottom',overlayNames,pch=15,col=overlayColors,
+					 horiz=F,xpd=T,ncol=2)
+		par(mar=c(4.1,4.1,4.1,2.1))
+		ymax <- NA
+		ymin <- NA
+		for(o.i in 1:length(dataForOverlayedFiguresFolders)){
+			ymax <- max(ymax,plotData.lst[[o.i]]$ciBounds,na.rm=T)
+			ymin <- min(ymin,plotData.lst[[o.i]]$ciBounds,na.rm=T)
+		}
+		plot(years,ciBounds[years,medianQIdx],
+				 ylim=c(ymin,ymax),
+				 xlim=range(as.numeric(years)),
+				 xaxs='i',
+				 type='n',
+				 xlab='',
+				 ylab=ifelse(exists('extraTitle'),extraTitle,varName.orig),
+				 xaxt='n',
+				 main=ifelse(exists('extraTitle'),extraTitle,varName.orig))
+		mtext(paste('Samples',plotWeightType,'weighted. Ranges show ',uncertaintyType,'.'),3,0.5,cex=par('cex'))
+		xax <- axis(1,at=seq(as.numeric(years[1]),as.numeric(years[length(years)]),10))
+		mtext('year',1,3)
+		grid(nx=length(xax)-1,ny=NA)
+		abline(h=axTicks(2),lty='dotted',col='gray')
+		for(o.i in 1:length(dataForOverlayedFiguresFolders)){
+			ciBoundQs.lcol <- rep(overlayColors[o.i],length(ciBoundQs.lcol))
+			plotData <- plotData.lst[[o.i]]
+			years <- plotData$years
+			uncertaintyType <- plotData$uncertaintyType
+			ciBoundQs <- plotData$ciBoundQs
+			ciBounds <- plotData$ciBounds
+			means <- plotData$means
+			defRun <- plotData$defaultRun
+			calDat <- plotData$calDat
+			for(ci.i in length(CIsToPlot.col):1){
+				CIsToPlot.col[ci.i] <- adjustcolor(overlayColors[o.i],0.4/ci.i)
+				if(CIsToPlot[ci.i]==0){
+					#skip
+				} else {
+					if((length(ciBoundQs)%%2)==0){
+						idxOfLowCiBounds1 <- length(ciBoundQs)/2
+						ciBound.low <- ciBounds[,idxOfLowCiBounds1-ci.i+1]
+						ciBound.high <- ciBounds[years,idxOfLowCiBounds1+ci.i]
+					} else {
+						idxOfLowCiBounds1 <- length(ciBoundQs)/2
+						ciBound.low <- ciBounds[years,idxOfLowCiBounds1-ci.i+1.5]
+						ciBound.high <- ciBounds[years,idxOfLowCiBounds1+ci.i-.5]
+					}
+					polygon(c(years,rev(years)),c(ciBound.low,rev(ciBound.high)),
+									col=CIsToPlot.col[ci.i],lty = 0)
+				}
+			}
+		}
+		for(o.i in 1:length(dataForOverlayedFiguresFolders)){
+			ciBoundQs.lcol <- rep(overlayColors[o.i],length(ciBoundQs.lcol))
+			plotData <- readRDS(file.path(dataForOverlayedFiguresFolders[o.i],file))
+			years <- plotData$years
+			uncertaintyType <- plotData$uncertaintyType
+			ciBoundQs <- plotData$ciBoundQs
+			ciBounds <- plotData$ciBounds
+			means <- plotData$means
+			defRun <- plotData$defaultRun
+			calDat <- plotData$calDat
+			for(q.i in 1:length(ciBoundQs)){
+				lines(years,ciBounds[years,q.i],
+							lty=ciBoundQs.lty[q.i],
+							lwd=ciBoundQs.lwd[q.i],
+							col=ciBoundQs.lcol[q.i])
+			}
+			if(alsoPlotMean){
+				lines(years,means,lty=mean.lty,lwd=mean.lwd,col=mean.col)
+			}
+			if(alsoPlotDefaultRun){
+				lines(yearsToPlot,defRun,lty=def.lty,lwd=def.lwd,col=def.cols[o.i])
+			}
+			if(!is.null(calDat)){
+				points(yearsToPlot[1:length(calDat)],calDat,
+							 col=calDat.col,pch=20)
+			}
+		}
+		box()
+		dev.off()
+		cat('plotted\n')
+		n.plotted <- n.plotted + 1
+	} else {
+		missing <- overlayNames[!fileExists]
+		cat(sprintf('SKIPPED (missing in: %s)\n', paste(missing, collapse=', ')))
+		n.skipped <- n.skipped + 1
+	}
+}
+
+# --- final summary ---
+cat('===========================\n')
+cat(sprintf('Done. Figures plotted : %i\n', n.plotted))
+cat(sprintf('       Files skipped  : %i (data missing in >=1 ensemble folder)\n', n.skipped))
+cat(sprintf('Output saved to       : %s\n', location.plots))
+
