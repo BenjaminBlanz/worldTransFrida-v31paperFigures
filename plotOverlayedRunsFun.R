@@ -4,20 +4,31 @@ plotOverlayedRuns <- function(folders, colors, varName, CIsToPlot,
 															drawMedian=TRUE, titlePrepend='',
 															xlab='Year', xlim=NULL, ylim=NULL, drawCIOutline=TRUE,
 															vars=varsToPlot, lwd=1.5, ...) {
-	varData <- lapply(folders, function(f) {
+	# a variable need not be present in every folder, e.g. when it was only
+	# introduced in a later FRIDA version. Folders lacking it are left out of the
+	# panel, the others are still drawn.
+	available <- file.exists(file.path(folders, paste0(varName, varNameExtra)))
+	varData <- vector('list', length(folders))
+	varData[available] <- lapply(folders[available], function(f) {
 		readRDS(file.path(f, paste0(varName, varNameExtra)))
 	})
 
-	# determine axis limits from first folder's data
+	# determine axis limits from the first folder that has the variable
 	if (is.null(xlim)) {
-		xlim <- as.numeric(range(varData[[1]]$years))
+		xlim <- if (any(available)) {
+			as.numeric(range(varData[[which(available)[1]]]$years))
+		} else {
+			c(0, 1)
+		}
 	}
 	if (is.null(ylim)) {
-		if (is.null(vars[[varName]]$ylim)) {
-			allBounds <- do.call(rbind, lapply(varData, `[[`, 'ciBounds'))
+		if (!is.null(vars[[varName]]$ylim)) {
+			ylim <- vars[[varName]]$ylim * vars[[varName]]$scale
+		} else if (any(available)) {
+			allBounds <- do.call(rbind, lapply(varData[available], `[[`, 'ciBounds'))
 			ylim <- as.numeric(range(allBounds, na.rm=TRUE)) * vars[[varName]]$scale
 		} else {
-			ylim <- vars[[varName]]$ylim * vars[[varName]]$scale
+			ylim <- c(0, 1)
 		}
 	}
 
@@ -39,7 +50,7 @@ plotOverlayedRuns <- function(folders, colors, varName, CIsToPlot,
 	axis(2, at=ay, labels=ay, gap.axis=0)
 
 	# filled CI bands
-	for (o.i in seq_along(folders)) {
+	for (o.i in which(available)) {
 		dat <- varData[[o.i]]
 		for (CItoPlot.i in seq_along(CIsToPlot)) {
 			CItoPlot  <- CIsToPlot[CItoPlot.i]
@@ -58,7 +69,7 @@ plotOverlayedRuns <- function(folders, colors, varName, CIsToPlot,
 
 	# CI outlines
 	if (drawCIOutline) {
-		for (o.i in seq_along(folders)) {
+		for (o.i in which(available)) {
 			dat <- varData[[o.i]]
 			for (CItoPlot.i in seq_along(CIsToPlot)) {
 				CItoPlot  <- CIsToPlot[CItoPlot.i]
@@ -78,11 +89,14 @@ plotOverlayedRuns <- function(folders, colors, varName, CIsToPlot,
 
 	# medians
 	if (drawMedian) {
-		for (o.i in seq_along(folders)) {
+		for (o.i in which(available)) {
 			dat <- varData[[o.i]]
 			lines(dat$years,
 						dat$ciBounds[, '0.5'] * vars[[varName]]$scale,
 						lwd=lwd, col=adjustcolor(colors[o.i], alpha.f=1))
 		}
 	}
+
+	# lets the caller build a legend from the runs that actually got drawn
+	invisible(available)
 }
