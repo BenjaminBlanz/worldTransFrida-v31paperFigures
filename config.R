@@ -22,7 +22,7 @@ plotDataSubDir     <- file.path('figures', 'CI-plots', 'completeEquallyWeighted'
 
 # run configuration ####
 numSample          <- "100000"
-expIDprePreString  <- 'UA-v3-1-2026-08-18'
+expIDprePreString  <- 'UA-v3-1-2026-08-21'
 likeCutoffRatio    <- 1000
 varNameExtra       <- '-fit uncertainty-completeEqually-weighted.RDS'
 # the part of a run directory name that all scenarios share. Mirrors the climate
@@ -37,6 +37,15 @@ embPolicyFile          <- 'policy_EMB.csv'
 climateFeedbackFile    <- 'ClimateFeedback_On.csv'
 climateSTAOverrideFile <- 'ClimateSTAOverride_Off.csv'
 
+# scenario sweeps ####
+# families of scenarios that sweep a single number, here the carbon tax in
+# $/tCO2e that the scenario file ramps to. The capture group picks that number
+# out of the scenario name
+carbonTaxSweepPatterns <- c(
+	'CCS'   = '^v31Doc_CCS_c([0-9]+)$',
+	'NoCCS' = '^v31Doc_NoCCS_c([0-9]+)$'
+)
+
 # paper figure palette ####
 # one colour per ensemble, shared by all paper figures so that the same run keeps
 # the same colour wherever it appears. The v3.1 EMB baseline is the reference run
@@ -47,8 +56,16 @@ paperCols <- c(
 	'EMB'       = '#000000',
 	'v2.1'      = '#009E73',
 	'Gov. Inv.' = '#0072B2',
-	'Insurance' = '#E69F00'
+	'Insurance' = '#E69F00',
+	'CCS'       = '#000000',
+	'NoCCS'     = '#CC79A7'
 )
+
+# colours for several variables overlaid in one panel, e.g. the three fossil
+# fuels. Line type cannot carry this once the variables have CI ranges to shade,
+# so in such a panel the variables take the colours and the scenario family takes
+# the line type instead. Black, brown, ochre.
+varOverlayCols <- c('#000000', '#8B4513', '#CC7722')
 
 ##############################################################################
 ######## derived                                                    ##########
@@ -133,3 +150,21 @@ resultFolders <- c(
 	'Gov. Inv.' = plotDataFolder(scenarios[['v31Doc_gov_investment_scenario']]$dir),
 	'Insurance' = plotDataFolder(scenarios[['v31Doc_insurance_scenario']]$dir)
 )
+
+# scenario sweeps ####
+# one table per sweep family, sorted by the swept value. These are deliberately
+# kept out of resultFolders, which runFRIDAv3-1PaperAll.R uses as a hard gate: a
+# sweep that is only partly run should leave gaps in its figure and warn about
+# them, not stop the whole pipeline.
+scenarioSweep <- function(pattern) {
+	sweepNames <- grep(pattern, names(scenarios), value=TRUE)
+	sweepValue <- as.numeric(sub(pattern, '\\1', sweepNames))
+	sweepNames <- sweepNames[order(sweepValue)]
+	data.frame(
+		value     = sort(sweepValue),
+		scenario  = sweepNames,
+		folder    = sapply(sweepNames, function(n) plotDataFolder(scenarios[[n]]$dir)),
+		row.names = NULL, stringsAsFactors = FALSE
+	)
+}
+carbonTaxSweeps <- lapply(carbonTaxSweepPatterns, scenarioSweep)
