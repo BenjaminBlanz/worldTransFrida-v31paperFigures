@@ -128,7 +128,7 @@ varsToPlot <- list(
 )
 
 # joint plot ####
-cat('Plotting Figure 2\n')
+cat('Plotting Figure 3\n')
 setwd(homeWD)
 fig.dir  <- file.path('figures', 'multipanel')
 fig.w    <- 7
@@ -142,7 +142,7 @@ fig2.ncol            <- 3
 fig2.nrow            <- 4
 fig2.legendHeightMult <- 0.3
 
-png(file.path(fig.dir, 'Figure2.png'),
+png(file.path(fig.dir, 'Figure3.png'),
 		width=fig.w * fig2.ncol, height=fig.h * (fig2.nrow + fig2.legendHeightMult),
 		units=fig.unit, res=fig.res)
 layout(
