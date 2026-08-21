@@ -3,7 +3,7 @@
 plotOverlayedRuns <- function(folders, colors, varName, CIsToPlot,
 															drawMedian=TRUE, titlePrepend='',
 															xlab='Year', xlim=NULL, ylim=NULL, drawCIOutline=TRUE,
-															vars=varsToPlot, lwd=1.5, ...) {
+															vars=varsToPlot, lwd=1.5, drawDefaultRun=FALSE, ...) {
 	# a variable need not be present in every folder, e.g. when it was only
 	# introduced in a later FRIDA version. Folders lacking it are left out of the
 	# panel, the others are still drawn.
@@ -36,17 +36,21 @@ plotOverlayedRuns <- function(folders, colors, varName, CIsToPlot,
 			 xlim=xlim, ylim=ylim,
 			 main=paste0(titlePrepend, vars[[varName]]$name),
 			 xaxs='i', yaxs='i', xaxt='n', yaxt='n')
-	grid()
+	# the tick positions are worked out before anything is drawn, so that the grid
+	# can be put exactly where the tick marks end up. grid() draws at the default
+	# tick positions, which are not the ones nTicks asks for
+	ax <- axTicks(1)
+	nTicks <- vars[[varName]]$nTicks
+	ay <- if (is.null(nTicks)) axTicks(2) else seq(par('usr')[3], par('usr')[4],
+																								 length.out=nTicks)
+	abline(v=ax, col='lightgray', lty='dotted')
+	abline(h=ay, col='lightgray', lty='dotted')
 	box()
 	abline(h=0, col='gray')
-	ax <- axTicks(1)
 	axis(1, at=ax, labels=FALSE)
 	axis(1, at=ax[-c(1, length(ax))], tick=FALSE)
 	axis(1, at=ax[1],          labels=ax[1],          tick=FALSE, hadj=0)
 	axis(1, at=ax[length(ax)], labels=ax[length(ax)], tick=FALSE, hadj=1)
-	nTicks <- vars[[varName]]$nTicks
-	ay <- if (is.null(nTicks)) axTicks(2) else seq(par('usr')[3], par('usr')[4],
-																								 length.out=nTicks)
 	axis(2, at=ay, labels=ay, gap.axis=0)
 
 	# filled CI bands
@@ -93,6 +97,15 @@ plotOverlayedRuns <- function(folders, colors, varName, CIsToPlot,
 			dat <- varData[[o.i]]
 			lines(dat$years,
 						dat$ciBounds[, '0.5'] * vars[[varName]]$scale,
+						lwd=lwd, col=adjustcolor(colors[o.i], alpha.f=1))
+		}
+	}
+
+	# the frida default run, for figures showing the fit rather than the spread
+	if (drawDefaultRun) {
+		for (o.i in which(available)) {
+			dat <- varData[[o.i]]
+			lines(dat$years, dat$defaultRun * vars[[varName]]$scale,
 						lwd=lwd, col=adjustcolor(colors[o.i], alpha.f=1))
 		}
 	}

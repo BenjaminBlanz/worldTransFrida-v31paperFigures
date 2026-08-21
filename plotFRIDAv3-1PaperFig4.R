@@ -42,25 +42,39 @@ sliceVars <- list(
 		scale = 1,
 		ylim  = c(0, 120)
 	),
+	list(
+		variables = c('gdp_future_year_in_recession'),
+		name  = 'Number of years spend in recession',
+		unit  = 'years',
+		scale = 1,
+		ylim  = c(0, 50)
+	),
+	list(
+		variables = c('inflation_inflation_index'),
+		name  = 'Inflation index',
+		unit  = 'index 2021=1',
+		scale = 1,
+		ylim  = c(0, 20)
+	),
 	# the three fuels as their own rows. To overlay them in one panel instead,
 	# replace the three entries below with the commented one at the end of this
 	# list, which draws them in varOverlayCols
 	list(
-		variables = c('fossil_energy_coal_endogenous_share_of_emissions_stored'),
+		variables = c('fossil_energy_coal_share_of_emissions_stored'),
 		name  = 'Coal Emissions Stored',
 		unit  = '% of emissions',
 		scale = 100,
 		ylim  = c(0, 105)
 	),
 	list(
-		variables = c('fossil_energy_gas_endogenous_share_of_emissions_stored'),
+		variables = c('fossil_energy_gas_share_of_emissions_stored'),
 		name  = 'Gas Emissions Stored',
 		unit  = '% of emissions',
 		scale = 100,
 		ylim  = c(0, 105)
 	),
 	list(
-		variables = c('fossil_energy_oil_endogenous_share_of_emissions_stored'),
+		variables = c('fossil_energy_oil_share_of_emissions_stored'),
 		name  = 'Oil Emissions Stored',
 		unit  = '% of emissions',
 		scale = 100,

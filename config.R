@@ -46,6 +46,11 @@ carbonTaxSweepPatterns <- c(
 	'NoCCS' = '^v31Doc_NoCCS_c([0-9]+)$'
 )
 
+# calibration data ####
+# the data FRIDA was fitted to, transposed: one row per variable, one column per
+# year, followed by metadata columns that are not years
+calibrationDataFile <- 'Calibration Data.csv'
+
 # paper figure palette ####
 # one colour per ensemble, shared by all paper figures so that the same run keeps
 # the same colour wherever it appears. The v3.1 EMB baseline is the reference run
@@ -168,3 +173,37 @@ scenarioSweep <- function(pattern) {
 	)
 }
 carbonTaxSweeps <- lapply(carbonTaxSweepPatterns, scenarioSweep)
+
+# calibration data ####
+# read once, keeping only the columns whose header is a year. The row names carry
+# an index suffix such as [1] while the plotData names carry [*], so the suffix is
+# dropped on both sides and the lookup goes by the plain FRIDA variable name.
+calibrationTable <- local({
+	f <- file.path(homeWD, calibrationDataFile)
+	if (!file.exists(f)) {
+		# the paper figures need it, the scenario runs do not, so a missing file is
+		# only a problem for whoever asks for a series
+		return(NULL)
+	}
+	raw <- read.csv(f, check.names=FALSE, row.names=1, stringsAsFactors=FALSE)
+	isYear <- !is.na(suppressWarnings(as.numeric(colnames(raw))))
+	tbl <- raw[, isYear, drop=FALSE]
+	rownames(tbl) <- sub('\\[[^]]*\\]$', '', rownames(tbl))
+	tbl
+})
+
+# the calibration series of a variable, given the original FRIDA name that the
+# plotData RDS carries in varName.orig. NULL when that variable has no data
+calibrationSeries <- function(varName.orig) {
+	if (is.null(calibrationTable)) {
+		warning(sprintf('%s not found, no calibration data available', calibrationDataFile))
+		return(NULL)
+	}
+	key <- sub('\\[[^]]*\\]$', '', varName.orig)
+	if (!key %in% rownames(calibrationTable)) return(NULL)
+	value <- suppressWarnings(as.numeric(calibrationTable[key, ]))
+	year  <- as.numeric(colnames(calibrationTable))
+	ok    <- !is.na(value)
+	if (!any(ok)) return(NULL)
+	data.frame(year=year[ok], value=value[ok])
+}
