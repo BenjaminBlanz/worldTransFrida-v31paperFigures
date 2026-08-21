@@ -2,12 +2,9 @@ source('config.R')
 source('plotOverlayedRunsFun.R')
 
 # overlay config ####
-dataFolders  <- c(
-	'/home/benjamin/mnt/levante/work/mh0033/b383346/Legacy_WorldTransFrida-Uncertainty/workOutput/UA_EMBv6Try2_nS100000/figures/CI-plots/completeEquallyWeighted/plotData/',
-	'/home/benjamin/mnt/levante/work/uc1275/u244021/WorldTransFrida-Uncertainty-FRIDA-development/workOutput/UA-v3-1-2026-08-18-S100000-policy_EMB-ClimateFeedback_On-ClimateSTAOverride_Off/figures/CI-plots/completeEquallyWeighted/plotData/'
-)
-overlayColors <- c('black', 'blue')
 overlayNames  <- c('v2.1', 'v3.1')
+overlayColors <- unname(paperCols[overlayNames])
+dataFolders   <- unname(resultFolders[overlayNames])
 
 CIsToPlot      <- c(0.67, 0.95)
 lwd            <- 1.5

@@ -2,13 +2,9 @@ source('config.R')
 source('plotOverlayedRunsFun.R')
 
 # overlay config ####
-dataFolders  <- c(
-	'/home/benjamin/mnt/levante/work/uc1275/u244021/WorldTransFrida-Uncertainty-FRIDA-development/workOutput/UA-v3-1-2026-08-18-S100000-policy_EMB-ClimateFeedback_On-ClimateSTAOverride_Off/figures/CI-plots/completeEquallyWeighted/plotData/',
-	'/home/benjamin/mnt/levante/work/uc1275/u244021/WorldTransFrida-Uncertainty-FRIDA-development/workOutput/UA-v3-1-2026-08-18-S100000-v31Doc_gov_investment_scenario-ClimateFeedback_On-ClimateSTAOverride_Off/figures/CI-plots/completeEquallyWeighted/plotData/',
-	'/home/benjamin/mnt/levante/work/uc1275/u244021/WorldTransFrida-Uncertainty-FRIDA-development/workOutput/UA-v3-1-2026-08-18-S100000-v31Doc_insurance_scenario-ClimateFeedback_On-ClimateSTAOverride_Off/figures/CI-plots/completeEquallyWeighted/plotData/'
-)
-overlayColors <- c('blue', 'green', 'red')
 overlayNames  <- c('EMB', 'Gov. Inv.', 'Insurance')
+overlayColors <- unname(paperCols[overlayNames])
+dataFolders   <- unname(resultFolders[overlayNames])
 
 CIsToPlot      <- c(0.67, 0.95)
 lwd            <- 1.5
@@ -17,12 +13,32 @@ plt.drawCIOutline <- TRUE
 
 # vars ####
 # ylim is given in raw data units, it gets multiplied by scale when plotting
+# Figure order is order of this list by row
+# 
+# Figure layout:
+# GDP | Inf | prod
+# pC  | Sint| unemp
+# pI  | lFai| trans
+# gE  | Rint| debt
 varsToPlot <- list(
 	gdp_real_gdp_in_2021c = list(
 		name  = 'GDP',
 		unit  = 'trillion 2021 intl. $/year',
 		scale = 1e-3,
-		ylim  = c(0, 1200)*1e3
+		ylim  = c(0, 1500)*1e3,
+		nTicks = 6
+	),
+	inflation_inflation_rate = list(
+		name  = 'Inflation Rate',
+		unit  = '% per year',
+		scale = 100,
+		ylim  = c(-1, 8)/100
+	),
+	employment_realised_productivity_growth = list(
+		name  = 'Productivity Growth',
+		unit  = '% per year',
+		scale = 100,
+		ylim  = c(0, 3)/100
 	),
 	circular_flow_real_private_consumption_2021c = list(
 		name  = 'Private Consumption',
@@ -30,62 +46,50 @@ varsToPlot <- list(
 		scale = 1e-3,
 		ylim  = c(0, 800)*1e3
 	),
+	government_central_bank_safe_interest = list(
+		name  = 'Safe Interest Rate',
+		unit  = '% per year',
+		scale = 100,
+		ylim  = c(0, 20)/100
+	),
+	employment_unemployment_rate = list(
+		name  = 'Unemployment Rate',
+		unit  = '% of labour pool',
+		scale = 100,
+		ylim  = c(0, 10)/100
+	),
 	gdp_private_investment_in_in_2021c = list(
 		name  = 'Private Investment',
 		unit  = 'trillion 2021 intl. $/year',
 		scale = 1e-3,
-		ylim  = c(0, 250)*1e3
+		ylim  = c(0, 400)*1e3
+	),
+	finance_failure_rate = list(
+		name  = 'Loan Failure Rate',
+		unit  = '% per year',
+		scale = 100,
+		ylim  = c(0, 20)/100
+	),
+	government_government_transfers_as_a_share_of_public_expenditure = list(
+		name  = 'Transfers as Share of Gov. Exp.',
+		unit  = 'ratio',
+		scale = 1,
+		ylim  = c(0, 2)
 	),
 	government_public_expenditure_in_2021c = list(
 		name  = 'Government Expenditure',
 		unit  = 'trillion 2021 intl. $/year',
 		scale = 1e-3,
-		ylim  = c(0, 300)*1e3
-	),
-	inflation_inflation_rate = list(
-		name  = 'Inflation Rate',
-		unit  = 'rate',
-		scale = 1,
-		ylim  = c(0, 0.05)
-	),
-	government_central_bank_safe_interest = list(
-		name  = 'Safe Interest Rate',
-		unit  = 'rate',
-		scale = 1,
-		ylim  = c(0, 0.05)
-	),
-	finance_failure_rate = list(
-		name  = 'Loan Failure Rate',
-		unit  = 'rate',
-		scale = 1,
-		ylim  = c(0, 0.1)
+		ylim  = c(0, 400)*1e3
 	),
 	finance_risky_interest = list(
 		name  = 'Risky Interest Rate',
-		unit  = 'rate',
-		scale = 1,
-		ylim  = c(0, 0.16)
-	),
-	employment_realised_productivity_growth = list(
-		name  = 'Productivity Growth',
-		unit  = '1/year',
-		scale = 1,
-		ylim  = c(0, 0.03)
-	),
-	employment_unemployment_rate = list(
-		name  = 'Unemployment Rate',
-		unit  = 'fraction of labour pool',
-		scale = 1,
-		ylim  = c(0.04, 0.1)
+		unit  = '% per year',
+		scale = 100,
+		ylim  = c(0, 20)/100
 	),
 	government_debt_to_gdp_ratio = list(
 		name  = 'Debt to GDP Ratio',
-		unit  = 'ratio',
-		scale = 1,
-		ylim  = c(0.5, 2)
-	),
-	government_government_transfers_as_a_share_of_public_expenditure = list(
-		name  = 'Transfers as Share of Gov. Exp.',
 		unit  = 'ratio',
 		scale = 1,
 		ylim  = c(0, 2)
