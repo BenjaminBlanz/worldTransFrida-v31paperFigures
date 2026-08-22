@@ -32,10 +32,17 @@ commonDirStringBit <- '-ClimateFeedback_On-ClimateSTAOverride_Off'
 # submit settings ####
 # these files have to be present in the FRIDA-configs folder of uncertaintyWD,
 # runFRIDAv3-1PaperScenarios.R puts the scenario policy files there
-runHours               <- 7
+runHours               <- 2
 embPolicyFile          <- 'policy_EMB.csv'
 climateFeedbackFile    <- 'ClimateFeedback_On.csv'
 climateSTAOverrideFile <- 'ClimateSTAOverride_Off.csv'
+# optional: supply a completed EMB run directory name to use as the calibrated
+# initial draw (--cid). When set, cpps and cpsp are also enabled for the EMB run
+embCID                 <- NULL   # e.g. 'UA-v3-1-2026-08-01-S100000-policy_EMB-ClimateFeedback_On-ClimateSTAOverride_Off'
+# running EMB for the first time, i.e. if embCID is false,
+# also has to do parm scaling and ranging which takes long
+# other scenarios will reuse the sampling points from emb so will run shorter.
+embRunHOURS <- 7
 
 # scenario sweeps ####
 # families of scenarios that sweep a single number, here the carbon tax in
@@ -88,17 +95,19 @@ scenarios <- list(
 		col='black',
 		areaCol='gray',
 		lty=1,
-		call=paste('./submit_UncertaintyAnalysisLevante.sh',
-							 '-n', numSample,
-							 '-h', runHours,
-							 '--pol', embPolicyFile,
-							 '--cfb', climateFeedbackFile,
-							 '--sta', climateSTAOverrideFile,
-							 '-s', expIDprePreString,
-							 '--outputType', 'RDS',
-							 '--sym', 'Min',
-							 '--cpps', 'false',
-							 '--cpsp', 'false')
+		call=paste(
+			'./submit_UncertaintyAnalysisLevante.sh',
+			'-n', numSample,
+			'-h', embRunHOURS,
+			'--pol', embPolicyFile,
+			'--cfb', climateFeedbackFile,
+			'--sta', climateSTAOverrideFile,
+			'-s', expIDprePreString,
+			'--outputType', 'RDS',
+			'--sym', 'Min',
+			'--cpps', if (!is.null(embCID)) 'true' else 'false',
+			'--cpsp', if (!is.null(embCID)) 'true' else 'false',
+			if (!is.null(embCID)) paste('--cid', embCID) else '')
 	)
 )
 

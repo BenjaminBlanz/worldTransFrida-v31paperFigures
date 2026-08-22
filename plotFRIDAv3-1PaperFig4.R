@@ -91,6 +91,13 @@ sliceVars <- list(
 		taxReference = TRUE
 	),
 	list(
+		variables = c('ccs_captured_co2_to_store'),
+		name  = 'Storing CO2',
+		unit  = 'GtCO2/year',
+		scale = 1e-3,
+		ylim  = c(0, 20000)*1e-3
+	),
+	list(
 		variables = c('ccs_stored_co2'),
 		name  = 'Stored CO2',
 		unit  = 'GtCO2',
