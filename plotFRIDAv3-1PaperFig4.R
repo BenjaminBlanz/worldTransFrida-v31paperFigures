@@ -44,7 +44,7 @@ sliceVars <- list(
 	),
 	list(
 		variables = c('gdp_future_year_in_recession'),
-		name  = 'Number of years spend in recession',
+		name  = 'Years spent in recession',
 		unit  = 'years',
 		scale = 1,
 		ylim  = c(0, 50)
@@ -54,49 +54,56 @@ sliceVars <- list(
 		name  = 'Inflation index',
 		unit  = 'index 2021=1',
 		scale = 1,
-		ylim  = c(0, 20)
+		ylim  = c(0, 30)
 	),
 	# the three fuels as their own rows. To overlay them in one panel instead,
 	# replace the three entries below with the commented one at the end of this
 	# list, which draws them in varOverlayCols
+	# list(
+	# 	variables = c('fossil_energy_coal_share_of_emissions_stored'),
+	# 	name  = 'Coal Emissions Stored',
+	# 	unit  = '% of emissions',
+	# 	scale = 100,
+	# 	ylim  = c(0, 105)
+	# ),
+	# list(
+	# 	variables = c('fossil_energy_gas_share_of_emissions_stored'),
+	# 	name  = 'Gas Emissions Stored',
+	# 	unit  = '% of emissions',
+	# 	scale = 100,
+	# 	ylim  = c(0, 105)
+	# ),
+	# list(
+	# 	variables = c('fossil_energy_oil_share_of_emissions_stored'),
+	# 	name  = 'Oil Emissions Stored',
+	# 	unit  = '% of emissions',
+	# 	scale = 100,
+	# 	ylim  = c(0, 105)
+	# ),
+	# list(
+	# 	variables = c('ccs_yearly_cost_of_storing_co2_per_unit'),
+	# 	name  = 'Cost of Storing CO2',
+	# 	unit  = '$ / tCO2',
+	# 	scale = 1,
+	# 	ylim  = c(0, 1500),
+	# 	# the x axis is a price per tCO2e as well, so the diagonal marks where
+	# 	# storing a tonne costs exactly what emitting it is taxed
+	# 	taxReference = TRUE
+	# ),
 	list(
-		variables = c('fossil_energy_coal_share_of_emissions_stored'),
-		name  = 'Coal Emissions Stored',
-		unit  = '% of emissions',
+		variables = c('emissions_share_of_co2_energy_emissions_captured'),
+		name  = 'Energy CO2 captured share',
+		unit  = '%',
 		scale = 100,
-		ylim  = c(0, 105)
+		ylim  = c(0, 100)
 	),
-	list(
-		variables = c('fossil_energy_gas_share_of_emissions_stored'),
-		name  = 'Gas Emissions Stored',
-		unit  = '% of emissions',
-		scale = 100,
-		ylim  = c(0, 105)
-	),
-	list(
-		variables = c('fossil_energy_oil_share_of_emissions_stored'),
-		name  = 'Oil Emissions Stored',
-		unit  = '% of emissions',
-		scale = 100,
-		ylim  = c(0, 105)
-	),
-	list(
-		variables = c('ccs_yearly_cost_of_storing_co2_per_unit'),
-		name  = 'Cost of Storing CO2',
-		unit  = '$ / tCO2',
-		scale = 1,
-		ylim  = c(0, 1500),
-		# the x axis is a price per tCO2e as well, so the diagonal marks where
-		# storing a tonne costs exactly what emitting it is taxed
-		taxReference = TRUE
-	),
-	list(
-		variables = c('ccs_captured_co2_to_store'),
-		name  = 'Storing CO2',
-		unit  = 'GtCO2/year',
-		scale = 1e-3,
-		ylim  = c(0, 20000)*1e-3
-	),
+	# list(
+	# 	variables = c('ccs_captured_co2_to_store'),
+	# 	name  = 'Storing CO2',
+	# 	unit  = 'GtCO2/year',
+	# 	scale = 1e-3,
+	# 	ylim  = c(0, 20000)*1e-3
+	# ),
 	list(
 		variables = c('ccs_stored_co2'),
 		name  = 'Stored CO2',

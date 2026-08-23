@@ -74,7 +74,7 @@ varsToPlot <- list(
 		name  = 'Transfers as Share of Gov. Exp.',
 		unit  = 'ratio',
 		scale = 1,
-		ylim  = c(0, 2)
+		ylim  = c(0, 1)
 	),
 	government_public_expenditure_in_2021c = list(
 		name  = 'Government Expenditure',
