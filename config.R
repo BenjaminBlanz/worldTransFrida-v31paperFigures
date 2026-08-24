@@ -22,7 +22,7 @@ plotDataSubDir     <- file.path('figures', 'CI-plots', 'completeEquallyWeighted'
 
 # run configuration ####
 numSample          <- "100000"
-expIDprePreString  <- 'UA-v3-1-2026-08-21'
+expIDprePreString  <- 'UA-v3-1-2026-08-22'
 likeCutoffRatio    <- 1000
 varNameExtra       <- '-fit uncertainty-completeEqually-weighted.RDS'
 # the part of a run directory name that all scenarios share. Mirrors the climate
@@ -53,10 +53,18 @@ carbonTaxSweepPatterns <- c(
 	'NoCCS' = '^v31Doc_NoCCS_c([0-9]+)$'
 )
 
-# calibration data ####
+# data ####
+# the input data the figure scripts read, all of it below this folder
+dataDir <- 'data'
+
 # the data FRIDA was fitted to, transposed: one row per variable, one column per
 # year, followed by metadata columns that are not years
-calibrationDataFile <- 'Calibration Data.csv'
+calibrationDataFile <- file.path(dataDir, 'Calibration Data.csv')
+
+# burned area figure: the ISIMIP2a GSWP3 surface temperature anomaly relative to
+# preindustrial, and the overburning percentiles of Burton et al. (2024) fig. 3
+gswp3TasFile       <- file.path(dataDir, 'gswp3_tas_anom_rel_preindus.csv')
+overburnedAreaFile <- file.path(dataDir, 'burton_global_fig3_full.csv')
 
 # paper figure palette ####
 # one colour per ensemble, shared by all paper figures so that the same run keeps
