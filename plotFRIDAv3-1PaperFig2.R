@@ -48,7 +48,7 @@ fig.w    <- 7
 fig.h    <- 5
 fig.unit <- 'cm'
 fig.res  <- 450
-fig.xlim <- c(2020, 2100)
+fig.xlim <- c(2020, 2150)
 dir.create(fig.dir, FALSE, TRUE)
 
 fig3.ncol            <- 2

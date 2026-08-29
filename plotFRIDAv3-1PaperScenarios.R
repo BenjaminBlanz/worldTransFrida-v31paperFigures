@@ -175,7 +175,7 @@ fig.w    <- 15
 fig.h    <- 15
 fig.unit <- 'cm'
 fig.res  <- 450
-fig.xlim <- c(2020, 2100)
+fig.xlim <- c(2020, 2150)
 dir.create(fig.dir, FALSE, TRUE)
 
 ## legend ####
@@ -209,7 +209,7 @@ fig.w    <- 7
 fig.h    <- 5
 fig.unit <- 'cm'
 fig.res  <- 450
-fig.xlim <- c(2020, 2100)
+fig.xlim <- c(2020, 2150)
 dir.create(fig.dir, FALSE, TRUE)
 
 # 3 columns
