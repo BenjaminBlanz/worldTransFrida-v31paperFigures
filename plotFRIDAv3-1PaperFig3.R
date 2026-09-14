@@ -6,7 +6,7 @@ overlayNames  <- c('EMB', 'Gov. Inv.', 'Insurance')
 overlayColors <- unname(paperCols[overlayNames])
 dataFolders   <- unname(resultFolders[overlayNames])
 
-CIsToPlot      <- c(0.67, 0.95)
+CIsToPlot      <- c(0.67)
 lwd            <- 1.5
 plt.drawMedian    <- TRUE
 plt.drawCIOutline <- TRUE
@@ -25,62 +25,67 @@ varsToPlot <- list(
 		name  = 'GDP',
 		unit  = 'trillion 2021 intl. $/year',
 		scale = 1e-3,
-		ylim  = c(0, 1500)*1e3,
-		nTicks = 6
+		ylim  = c(0, 1600)*1e3,
+		nTicks = 5
 	),
 	inflation_inflation_rate = list(
 		name  = 'Inflation Rate',
 		unit  = '% per year',
 		scale = 100,
-		ylim  = c(-1, 8)/100
+		ylim  = c(-2, 6)/100
 	),
 	employment_realised_productivity_growth = list(
 		name  = 'Productivity Growth',
 		unit  = '% per year',
 		scale = 100,
-		ylim  = c(0, 3)/100
+		ylim  = c(0.5, 3)/100
 	),
 	circular_flow_real_private_consumption_2021c = list(
 		name  = 'Private Consumption',
 		unit  = 'trillion 2021 intl. $/year',
 		scale = 1e-3,
-		ylim  = c(0, 800)*1e3
+		ylim  = c(0, 1200)*1e3,
+		nTicks = 5
 	),
 	government_central_bank_safe_interest = list(
 		name  = 'Safe Interest Rate',
 		unit  = '% per year',
 		scale = 100,
-		ylim  = c(0, 20)/100
+		ylim  = c(0, 6)/100,
+		nTicks = 4
 	),
 	employment_unemployment_rate = list(
 		name  = 'Unemployment Rate',
 		unit  = '% of labour pool',
 		scale = 100,
-		ylim  = c(0, 10)/100
+		ylim  = c(4, 10)/100,
+		nTicks = 4
 	),
 	gdp_private_investment_in_in_2021c = list(
 		name  = 'Private Investment',
 		unit  = 'trillion 2021 intl. $/year',
 		scale = 1e-3,
-		ylim  = c(0, 400)*1e3
+		ylim  = c(0, 300)*1e3,
+		nTicks = 4
 	),
 	finance_failure_rate = list(
 		name  = 'Loan Failure Rate',
 		unit  = '% per year',
 		scale = 100,
-		ylim  = c(0, 20)/100
+		ylim  = c(0, 12)/100,
+		nTicks = 4
 	),
 	government_government_transfers_as_a_share_of_public_expenditure = list(
 		name  = 'Transfers as Share of Gov. Exp.',
 		unit  = 'ratio',
 		scale = 1,
-		ylim  = c(0, 1)
+		ylim  = c(0, 0.8)
 	),
 	government_public_expenditure_in_2021c = list(
 		name  = 'Government Expenditure',
 		unit  = 'trillion 2021 intl. $/year',
 		scale = 1e-3,
-		ylim  = c(0, 400)*1e3
+		ylim  = c(0, 500)*1e3
 	),
 	finance_risky_interest = list(
 		name  = 'Risky Interest Rate',
@@ -92,7 +97,7 @@ varsToPlot <- list(
 		name  = 'Debt to GDP Ratio',
 		unit  = 'ratio',
 		scale = 1,
-		ylim  = c(0, 2)
+		ylim  = c(0, 4)
 	)#,
 	# further variables, uncomment to include (adjust fig3.ncol/fig3.nrow to match)
 	# gdp_government_consumption_in_2021c = list(

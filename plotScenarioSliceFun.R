@@ -14,7 +14,8 @@
 plotScenarioSlice <- function(series, CIsToPlot,
 															main='', xlab='', ylab='',
 															xlim=NULL, ylim=NULL, scale=1,
-															drawMedian=TRUE, drawCIOutline=TRUE, lwd=1.5) {
+															drawMedian=TRUE, drawCIOutline=TRUE, lwd=1.5,
+															nTicks=NULL) {
 	available <- sapply(series, function(s) length(s$x) > 0)
 
 	if (is.null(xlim)) {
@@ -34,15 +35,19 @@ plotScenarioSlice <- function(series, CIsToPlot,
 
 	plot(0, 0, type='n', xlab=xlab, ylab=ylab, xlim=xlim, ylim=ylim, main=main,
 			 xaxs='i', yaxs='i', xaxt='n', yaxt='n')
-	grid()
+	# tick positions first and the grid drawn at them, as in plotOverlayedRunsFun.R,
+	# since grid() does not know about nTicks
+	ax <- axTicks(1)
+	ay <- if (is.null(nTicks)) axTicks(2) else seq(par('usr')[3], par('usr')[4],
+																								 length.out=nTicks)
+	abline(v=ax, col='lightgray', lty='dotted')
+	abline(h=ay, col='lightgray', lty='dotted')
 	box()
 	abline(h=0, col='gray')
-	ax <- axTicks(1)
 	axis(1, at=ax, labels=FALSE)
 	axis(1, at=ax[-c(1, length(ax))], tick=FALSE)
 	axis(1, at=ax[1],          labels=ax[1],          tick=FALSE, hadj=0)
 	axis(1, at=ax[length(ax)], labels=ax[length(ax)], tick=FALSE, hadj=1)
-	ay <- axTicks(2)
 	axis(2, at=ay, labels=ay, gap.axis=0)
 
 	# filled CI bands. Unlike the time series version these are not extended past

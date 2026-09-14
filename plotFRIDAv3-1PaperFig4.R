@@ -13,7 +13,7 @@ overlayColors <- unname(paperCols[sweepsToPlot])
 sweepBaselineName  <- 'EMB'
 sweepBaselineValue <- 0
 
-CIsToPlot      <- c(0.67, 0.95)
+CIsToPlot      <- c(0.67)
 lwd            <- 1.5
 plt.drawMedian    <- TRUE
 plt.drawCIOutline <- TRUE
@@ -34,28 +34,29 @@ sliceVars <- list(
 		name  = 'Surface Temperature Anomaly',
 		unit  = '°C',
 		scale = 1,
-		ylim  = c(0, 6)
+		ylim  = c(1, 6)
 	),
 	list(
 		variables = c('demographics_real_gdp_per_person'),
 		name  = 'GDP per Person',
 		unit  = 'thsnd. 2021 intl. $ / person',
 		scale = 1,
-		ylim  = c(0, 120)
+		ylim  = c(0, 120),
+		nTicks = 5
 	),
 	list(
 		variables = c('gdp_future_year_in_recession'),
 		name  = 'Years spent in recession',
 		unit  = 'years',
 		scale = 1,
-		ylim  = c(0, 50)
+		ylim  = c(0, 40)
 	),
 	list(
 		variables = c('inflation_inflation_index'),
 		name  = 'Inflation index',
 		unit  = 'index 2021=1',
 		scale = 1,
-		ylim  = c(0, 30)
+		ylim  = c(0, 25)
 	),
 	# the three fuels as their own rows. To overlay them in one panel instead,
 	# replace the three entries below with the commented one at the end of this
@@ -96,7 +97,8 @@ sliceVars <- list(
 		name  = 'Energy CO2 captured share',
 		unit  = '%',
 		scale = 100,
-		ylim  = c(0, 100)
+		ylim  = c(0, 60),
+		nTicks = 4
 	),
 	# list(
 	# 	variables = c('ccs_captured_co2_to_store'),
@@ -238,7 +240,7 @@ for (v.i in seq_along(sliceVars)) {
 			series, CIsToPlot,
 			main=paste0(letters[panel.i], ') ', sliceVar$name, ' in ', sliceYears[y.i]),
 			xlab=sliceXlab, ylab=sliceVar$unit,
-			xlim=fig.xlim, ylim=sliceVar$ylim, scale=sliceVar$scale,
+			xlim=fig.xlim, ylim=sliceVar$ylim, scale=sliceVar$scale, nTicks=sliceVar$nTicks,
 			drawMedian=plt.drawMedian, drawCIOutline=plt.drawCIOutline, lwd=lwd
 		)
 		if (isTRUE(sliceVar$taxReference)) {

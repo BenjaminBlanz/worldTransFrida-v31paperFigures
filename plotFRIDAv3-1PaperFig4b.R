@@ -18,14 +18,14 @@ overlayNames  <- names(overlayScenarios)
 overlayColors <- unname(paperCols[overlayNames])
 dataFolders   <- unname(sapply(overlayScenarios, function(s) plotDataFolder(scenarios[[s]]$dir)))
 
-CIsToPlot      <- c(0.67, 0.95)
+CIsToPlot      <- c(0.67)
 lwd            <- 1.5
 plt.drawMedian    <- TRUE
 plt.drawCIOutline <- TRUE
 
 # vars ####
-# the rows of Figure 4, in the same order and with the same limits. Unlike there,
-# ylim is given in raw data units, it gets multiplied by scale when plotting
+# the rows of Figure 4, in the same order. Unlike there, ylim is given in raw data
+# units, it gets multiplied by scale when plotting
 #
 # Figure layout:
 # STA   | GDPpp    | recession
@@ -35,37 +35,39 @@ varsToPlot <- list(
 		name  = 'Surface Temperature Anomaly',
 		unit  = '°C',
 		scale = 1,
-		ylim  = c(0, 6)
+		ylim  = c(1, 6)
 	),
 	demographics_real_gdp_per_person = list(
 		name  = 'GDP per Person',
 		unit  = 'thsnd. 2021 intl. $ / person',
 		scale = 1,
-		ylim  = c(0, 120)
+		ylim  = c(0, 120),
+		nTicks = 5
 	),
 	gdp_future_year_in_recession = list(
 		name  = 'Years spent in recession',
 		unit  = 'years',
 		scale = 1,
-		ylim  = c(0, 50)
+		ylim  = c(0, 40)
 	),
 	inflation_inflation_index = list(
 		name  = 'Inflation index',
 		unit  = 'index 2021=1',
 		scale = 1,
-		ylim  = c(0, 30)
+		ylim  = c(0, 20)
 	),
 	emissions_share_of_co2_energy_emissions_captured = list(
 		name  = 'Energy CO2 captured share',
 		unit  = '%',
 		scale = 100,
-		ylim  = c(0, 100)/100
+		ylim  = c(0, 40)/100
 	),
 	ccs_stored_co2 = list(
 		name  = 'Stored CO2',
 		unit  = 'GtCO2',
 		scale = 1e-3,
-		ylim  = c(0, 2000)*1e3
+		ylim  = c(0, 1500)*1e3,
+		nTicks = 4
 	)
 )
 
