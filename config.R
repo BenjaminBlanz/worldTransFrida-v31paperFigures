@@ -66,6 +66,17 @@ calibrationDataFile <- file.path(dataDir, 'Calibration Data.csv')
 gswp3TasFile       <- file.path(dataDir, 'gswp3_tas_anom_rel_preindus.csv')
 overburnedAreaFile <- file.path(dataDir, 'burton_global_fig3_full.csv')
 
+# time axis of the paper figures ####
+# the years the scenario time series are drawn over, and the years labelled on
+# their x axis. The first label is aligned left and the last right, so that
+# neither sticks out past the axis. The labels therefore have to be spaced wide
+# enough that those two still clear their neighbours. The carbon tax figure
+# takes its last slice at figYearEnd. The calibration figures show the historical
+# period and keep their own range.
+figYearStart <- 2025
+figYearEnd   <- 2150
+figYearTicks <- seq(figYearStart, figYearEnd, by=25)
+
 # paper figure palette ####
 # one colour per ensemble, shared by all paper figures so that the same run keeps
 # the same colour wherever it appears. The v3.1 EMB baseline is the reference run

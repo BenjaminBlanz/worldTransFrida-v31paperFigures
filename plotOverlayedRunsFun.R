@@ -3,7 +3,8 @@
 plotOverlayedRuns <- function(folders, colors, varName, CIsToPlot,
 															drawMedian=TRUE, titlePrepend='',
 															xlab='Year', xlim=NULL, ylim=NULL, drawCIOutline=TRUE,
-															vars=varsToPlot, lwd=1.5, drawDefaultRun=FALSE, ...) {
+															vars=varsToPlot, lwd=1.5, drawDefaultRun=FALSE,
+															xTicks=NULL, ...) {
 	# a variable need not be present in every folder, e.g. when it was only
 	# introduced in a later FRIDA version. Folders lacking it are left out of the
 	# panel, the others are still drawn.
@@ -38,8 +39,8 @@ plotOverlayedRuns <- function(folders, colors, varName, CIsToPlot,
 			 xaxs='i', yaxs='i', xaxt='n', yaxt='n')
 	# the tick positions are worked out before anything is drawn, so that the grid
 	# can be put exactly where the tick marks end up. grid() draws at the default
-	# tick positions, which are not the ones nTicks asks for
-	ax <- axTicks(1)
+	# tick positions, which are not the ones nTicks or xTicks ask for
+	ax <- if (is.null(xTicks)) axTicks(1) else xTicks
 	nTicks <- vars[[varName]]$nTicks
 	ay <- if (is.null(nTicks)) axTicks(2) else seq(par('usr')[3], par('usr')[4],
 																								 length.out=nTicks)

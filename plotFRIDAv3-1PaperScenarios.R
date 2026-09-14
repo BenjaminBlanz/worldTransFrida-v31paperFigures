@@ -94,7 +94,8 @@ varsToPlot <- list(
 # plot fun ####
 plotOverlayedScenarios <- function(scenariosToPlot, varName, CIsToPlot,
 																	 drawMedian=TRUE, titlePrepend='',
-																	 xlab='Year', xlim=NULL, ylim=NULL, drawCIOutline=TRUE, ...) {
+																	 xlab='Year', xlim=NULL, ylim=NULL, drawCIOutline=TRUE,
+																	 xTicks=NULL, ...) {
 	varData <- list()
 	for (scenario.i in 1:length(scenariosToPlot)) {
 		scenarioName <- names(scenariosToPlot)[scenario.i]
@@ -120,10 +121,13 @@ plotOverlayedScenarios <- function(scenariosToPlot, varName, CIsToPlot,
 					 xlim=xlim, ylim=ylim,
 					 main=paste0(titlePrepend, varsToPlot[[varName]]$name),
 					 xaxs='i', yaxs='i', xaxt='n')
-			grid()
+			# the vertical grid goes where the tick marks are, which grid() does not
+			# know about when xTicks sets them
+			ax <- if (is.null(xTicks)) axTicks(1) else xTicks
+			grid(nx=NA, ny=NULL)
+			abline(v=ax, col='lightgray', lty='dotted')
 			box()
 			abline(h=0, col='gray')
-			ax <- axTicks(1)
 			axis(1, at=ax, labels=FALSE)
 			axis(1, at=ax[-c(1, length(ax))], tick=FALSE)
 			axis(1, at=ax[1],          labels=ax[1],          tick=FALSE, hadj=0)
@@ -175,7 +179,7 @@ fig.w    <- 15
 fig.h    <- 15
 fig.unit <- 'cm'
 fig.res  <- 450
-fig.xlim <- c(2020, 2150)
+fig.xlim <- c(figYearStart, figYearEnd)
 dir.create(fig.dir, FALSE, TRUE)
 
 ## legend ####
@@ -199,7 +203,7 @@ for (i in 1:length(varsToPlot)) {
 	plotOverlayedScenarios(scenarios, names(varsToPlot)[i], CIsToPlot,
 												 drawMedian=plt.drawMedian,
 												 drawCIOutline=plt.drawCIOutline,
-												 xlim=fig.xlim)
+												 xlim=fig.xlim, xTicks=figYearTicks)
 	dev.off()
 }
 
@@ -212,7 +216,7 @@ fig.w    <- 7
 fig.h    <- 5
 fig.unit <- 'cm'
 fig.res  <- 450
-fig.xlim <- c(2020, 2150)
+fig.xlim <- c(figYearStart, figYearEnd)
 dir.create(fig.dir, FALSE, TRUE)
 
 # 3 columns
@@ -241,7 +245,7 @@ layout(matrix(c(1:(fig1.nrow * fig1.ncol), rep((fig1.nrow * fig1.ncol + 1), fig1
 for (var.i in 1:length(fig1.vars)) {
 	par(mar=c(2, 2.4, 2, 1), mgp=c(1.4, 0.5, 0))
 	plotOverlayedScenarios(scenarios, fig1.vars[var.i], CIsToPlot,
-												 xlim=fig.xlim, xlab='',
+												 xlim=fig.xlim, xTicks=figYearTicks, xlab='',
 												 titlePrepend=paste0(letters[var.i], ') '),
 												 drawMedian=plt.drawMedian,
 												 drawCIOutline=plt.drawCIOutline)

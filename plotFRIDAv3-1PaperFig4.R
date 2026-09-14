@@ -3,7 +3,8 @@ source('plotScenarioSliceFun.R')
 
 # sweep config ####
 sweepsToPlot <- c('CCS', 'NoCCS')
-sliceYears   <- c(2050, 2100, 2150)
+# the last slice is the end of the period the time series figures show
+sliceYears   <- c(2050, 2100, figYearEnd)
 overlayColors <- unname(paperCols[sweepsToPlot])
 
 # the EMB baseline sets no carbon tax at all, so it is the 0 $/tCO2e end of every

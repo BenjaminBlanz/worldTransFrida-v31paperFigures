@@ -48,7 +48,7 @@ fig.w    <- 7
 fig.h    <- 5
 fig.unit <- 'cm'
 fig.res  <- 450
-fig.xlim <- c(2020, 2150)
+fig.xlim <- c(figYearStart, figYearEnd)
 dir.create(fig.dir, FALSE, TRUE)
 
 fig2.ncol            <- 2
@@ -70,7 +70,7 @@ drawnAnywhere <- rep(FALSE, length(dataFolders))
 for (var.i in seq_along(varsToPlot)) {
 	par(mar=c(2, 2.4, 2, 1), mgp=c(1.4, 0.5, 0))
 	available <- plotOverlayedRuns(dataFolders, overlayColors, names(varsToPlot)[var.i], CIsToPlot,
-																 xlim=fig.xlim, xlab='',
+																 xlim=fig.xlim, xTicks=figYearTicks, xlab='',
 																 titlePrepend=paste0(letters[var.i], ') '),
 																 drawMedian=plt.drawMedian,
 																 drawCIOutline=plt.drawCIOutline)
