@@ -9,7 +9,7 @@ source('config.R')
 scenarioScript <- 'runFRIDAv3-1PaperScenarios.R'
 # the numbered paper figures plus the unnumbered ones, the calibration figure and
 # the overburned area figure
-figureScripts  <- sort(list.files('.', pattern='^plotFRIDAv3-1Paper(Fig[0-9]+|FigOverburnedArea|Calibration)\\.R$'))
+figureScripts  <- sort(list.files('.', pattern='^plotFRIDAv3-1Paper(Fig[0-9]+[a-z]?|FigOverburnedArea|Calibration)\\.R$'))
 
 homeWD <- getwd()
 # the scripts share this session, each one sources config.R to initialise itself.

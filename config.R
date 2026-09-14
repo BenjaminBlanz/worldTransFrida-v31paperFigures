@@ -89,7 +89,12 @@ paperCols <- c(
 	'Gov. Inv.' = '#0072B2',
 	'Insurance' = '#E69F00',
 	'CCS'       = '#000000',
-	'NoCCS'     = '#CC79A7'
+	'NoCCS'     = '#CC79A7',
+	# single runs out of the two carbon tax sweeps, shown next to EMB. A warm and a
+	# cool colour, so the two stay apart where their ranges overlap, and neither
+	# taken by another run in the paper figures
+	'100$ tax w CCS'   = '#D55E00',
+	'100$ tax w/o CCS' = '#56B4E9'
 )
 
 # colours for several variables overlaid in one panel, e.g. the three fossil
