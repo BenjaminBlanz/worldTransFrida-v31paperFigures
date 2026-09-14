@@ -179,6 +179,7 @@ fig.xlim <- c(2020, 2150)
 dir.create(fig.dir, FALSE, TRUE)
 
 ## legend ####
+cat(sprintf('Plotting legend to %s\n', file.path(fig.dir, 'legend.png')))
 png(file.path(fig.dir, 'legend.png'), width=7, height=3, units=fig.unit, res=fig.res)
 par(mar=c(0, 0, 0, 0))
 plot(0, 0, type='n', axes=FALSE, xlab='', ylab='')
@@ -189,7 +190,8 @@ legend('center',
 dev.off()
 
 ## plots ####
-cat('Plotting\n')
+cat(sprintf('Plotting one figure per variable, all %i scenarios overlaid, to %s\n',
+						length(scenarios), fig.dir))
 for (i in 1:length(varsToPlot)) {
 	cat(sprintf('%3i of %3i : %s\n', i, length(varsToPlot), varsToPlot[[i]]$name))
 	png(file.path(fig.dir, paste0(names(varsToPlot)[i], '.png')),
@@ -202,9 +204,10 @@ for (i in 1:length(varsToPlot)) {
 }
 
 # joint plot ####
-cat('Plotting multipanel figure\n')
 setwd(homeWD)
 fig.dir  <- file.path('figures', 'multipanel')
+cat(sprintf('Plotting multipanel figure, all %i scenarios overlaid, to %s\n',
+						length(scenarios), file.path(fig.dir, 'Figure1.png')))
 fig.w    <- 7
 fig.h    <- 5
 fig.unit <- 'cm'
@@ -251,3 +254,4 @@ legend('center',
 			 fill=adjustcolor(scenarioAreaCols, 0.2), cex=1,
 			 ncol=floor(length(scenarios) / 2))
 dev.off()
+cat(sprintf('Figure saved to %s\n', file.path(fig.dir, 'Figure1.png')))

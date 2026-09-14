@@ -71,7 +71,12 @@ for(pl.i in 0:length(varsToPlot)){
 	stopifnot(length(varsToPlot) > 0)
 	
 	# joint plot ####
-	cat('Plotting calibration figure\n')
+	# the first figure holds all variables side by side, every further one a single
+	# variable
+	fig.file <- paste0('FigureJointCalibration', pl.i, '.png')
+	cat(sprintf('Plotting calibration figure %i of %i (%s): %s\n',
+							pl.i + 1, length(varsToPlot.orig) + 1, fig.file,
+							paste(sapply(varsToPlot, `[[`, 'name'), collapse=', ')))
 	setwd(homeWD)
 	fig.dir  <- file.path('figures', 'multipanel')
 	fig.w    <- 9
@@ -85,7 +90,7 @@ for(pl.i in 0:length(varsToPlot)){
 	cal.nrow            <- 1
 	cal.legendHeightMult <- 0.3
 	
-	png(file.path(fig.dir, paste0('FigureJointCalibration',pl.i,'.png')),
+	png(file.path(fig.dir, fig.file),
 			width=fig.w * cal.ncol, height=fig.h * (cal.nrow + cal.legendHeightMult),
 			units=fig.unit, res=fig.res)
 	layout(
@@ -122,5 +127,5 @@ for(pl.i in 0:length(varsToPlot)){
 				 # side by side is wider than a one panel figure, so stack them instead
 				 cex=1, ncol=if (cal.ncol > 1) 2 else 1)
 	dev.off()
-	cat(sprintf('Figure saved to %s\n', file.path(fig.dir, 'FigureCalibration.png')))
+	cat(sprintf('Figure saved to %s\n', file.path(fig.dir, fig.file)))
 }

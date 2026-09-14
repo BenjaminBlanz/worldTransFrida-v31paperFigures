@@ -51,18 +51,18 @@ fig.res  <- 450
 fig.xlim <- c(2020, 2150)
 dir.create(fig.dir, FALSE, TRUE)
 
-fig3.ncol            <- 2
-fig3.nrow            <- 2
-fig3.legendHeightMult <- 0.3
+fig2.ncol            <- 2
+fig2.nrow            <- 2
+fig2.legendHeightMult <- 0.3
 
 png(file.path(fig.dir, 'Figure2.png'),
-		width=fig.w * fig3.ncol, height=fig.h * (fig3.nrow + fig3.legendHeightMult),
+		width=fig.w * fig2.ncol, height=fig.h * (fig2.nrow + fig2.legendHeightMult),
 		units=fig.unit, res=fig.res)
 layout(
-	matrix(c(1:(fig3.nrow * fig3.ncol), rep(fig3.nrow * fig3.ncol + 1, fig3.ncol)),
-				 byrow=TRUE, ncol=fig3.ncol),
-	widths  = rep(1, fig3.ncol),
-	heights = c(rep(1, fig3.nrow), fig3.legendHeightMult)
+	matrix(c(1:(fig2.nrow * fig2.ncol), rep(fig2.nrow * fig2.ncol + 1, fig2.ncol)),
+				 byrow=TRUE, ncol=fig2.ncol),
+	widths  = rep(1, fig2.ncol),
+	heights = c(rep(1, fig2.nrow), fig2.legendHeightMult)
 )
 # not every variable exists in every run, only the runs that end up drawn
 # somewhere in the figure belong in the legend
@@ -93,4 +93,4 @@ legend('center',
 			 fill=adjustcolor(overlayColors[drawnAnywhere], 0.2), cex=1,
 			 ncol=sum(drawnAnywhere))
 dev.off()
-cat(sprintf('Figure saved to %s\n', file.path(fig.dir, 'Figure3.png')))
+cat(sprintf('Figure saved to %s\n', file.path(fig.dir, 'Figure2.png')))
