@@ -43,6 +43,14 @@ embCID                 <- NULL   # e.g. 'UA-v3-1-2026-08-01-S100000-policy_EMB-C
 # also has to do parm scaling and ranging which takes long
 # other scenarios will reuse the sampling points from emb so will run shorter.
 embRunHOURS <- 7
+# Format(s) of the *final* one file per variable results.
+# The per chunk intermediates the workers write are always plain uncompressed
+# csv, mergePerVarFiles derives every requested final format from those.
+# Outputting csv files only massively reduces the amount of memory needed in the 
+# merging step. If enabling RDS files make sure to reduce the number of workers
+# used in the merge step.
+# Allowed options: 'csv','RDS', or 'both'
+perVarOutputTypes <- 'csv'
 
 # scenario sweeps ####
 # families of scenarios that sweep a single number, here the carbon tax in
@@ -127,7 +135,7 @@ scenarios <- list(
 			'--cfb', climateFeedbackFile,
 			'--sta', climateSTAOverrideFile,
 			'-s', expIDprePreString,
-			'--outputType', 'RDS',
+			'--outputType', perVarOutputTypes,
 			'--sym', 'Min',
 			'--cpps', if (!is.null(embCID)) 'true' else 'false',
 			'--cpsp', if (!is.null(embCID)) 'true' else 'false',
@@ -154,7 +162,7 @@ for (p.i in seq_along(scenario_files)) {
 							 '--cfb', climateFeedbackFile,
 							 '--sta', climateSTAOverrideFile,
 							 '-s', expIDprePreString,
-							 '--outputType', 'RDS',
+							 '--outputType', perVarOutputTypes,
 							 '--sym', 'Min',
 							 '--cpps', 'true',
 							 '--cpsp', 'true',
