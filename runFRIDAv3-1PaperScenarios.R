@@ -40,22 +40,84 @@ deployScenarioFile <- function(scenarioName) {
 	invisible(dst)
 }
 
+# run status ####
+statusFileOf <- function(scenarioName) {
+	file.path(dataLocation, scenarios[[scenarioName]]$dir, 'status')
+}
+
+readStatusFile <- function(statusFile) {
+	if (file.exists(statusFile)) {
+		readChar(statusFile, file.info(statusFile)$size - 1)
+	} else {
+		'not started'
+	}
+}
+
+# TRUE or FALSE, NA where squeue cannot be asked. The submit script names the job
+# after the run folder.
+slurmJobExists <- function(jobName) {
+	out <- tryCatch(suppressWarnings(system2('squeue', c('-h', '-u', Sys.getenv('USER'),
+																											 '-n', shQuote(jobName), '-o', '%i'),
+																					 stdout=TRUE, stderr=TRUE)),
+									error=function(e) NULL)
+	exitCode <- attr(out, 'status')
+	if (is.null(out) || (!is.null(exitCode) && exitCode != 0)) {
+		return(NA)
+	}
+	length(out) > 0
+}
+
+# 'stale' for a run whose status file says submitted or started but that has no
+# job in SLURM: it was cancelled or killed before it could write a final status.
+# The file is read again after asking SLURM, a job that ended in between has
+# written its final status by then.
+scenarioStatus <- function(scenarioName) {
+	statusFile <- statusFileOf(scenarioName)
+	status <- readStatusFile(statusFile)
+	if (status %in% c('submitted', 'started') &&
+			isFALSE(slurmJobExists(scenarios[[scenarioName]]$dir))) {
+		status <- readStatusFile(statusFile)
+		if (status %in% c('submitted', 'started')) {
+			status <- 'stale'
+		}
+	}
+	status
+}
+
+staleMessage <- function(scenarioName) {
+	sprintf(paste0('Scenario %s run is stale: its status file says it is queued or running,\n',
+								 '  but SLURM has no job for it, so it was cancelled or killed.\n',
+								 '  Delete %s to resubmit it.\n'),
+					scenarioName, statusFileOf(scenarioName))
+}
+
+# the submit script writes the status file before calling sbatch. A failed
+# submission leaves no job behind, so its status file goes again.
+submitScenario <- function(scenarioName) {
+	deployScenarioFile(scenarioName)
+	exitCode <- system(scenarios[[scenarioName]]$call)
+	if (exitCode != 0) {
+		unlink(statusFileOf(scenarioName))
+		setwd(homeWD)
+		stop(sprintf('Submitting scenario %s failed with exit code %i, see the output above\n',
+								 scenarioName, exitCode))
+	}
+}
+
 # run scenarios ####
 # if they don't already exist
 
 ## EMB ####
 scenarioName <- 'EMB'
 setwd(uncertaintyWD)
-statusFile <- file.path(dataLocation, scenarios[[scenarioName]]$dir, 'status')
-if (file.exists(statusFile)) {
-	status <- readChar(statusFile, file.info(statusFile)$size - 1)
-} else {
-	status <- 'not started'
-}
+status <- scenarioStatus(scenarioName)
 cat(sprintf('EMB status: %s\n', status))
+if (status == 'stale') {
+	setwd(homeWD)
+	stop(staleMessage(scenarioName))
+}
 if (status == 'not started') {
-	deployScenarioFile(scenarioName)
-	system(scenarios[[scenarioName]]$call)
+	submitScenario(scenarioName)
 	setwd(homeWD)
 	stop(sprintf('Scenario %s run has been submitted to SLURM, please restart this script once the baseline run has completed\n', scenarioName))
 }
@@ -72,20 +134,13 @@ if (status == 'failed') {
 statuses <- c()
 setwd(uncertaintyWD)
 for (scenarioName in names(scenarios)) {
-	statusFile <- file.path(dataLocation, scenarios[[scenarioName]]$dir, 'status')
-	if (file.exists(statusFile)) {
-		statuses[scenarioName] <- readChar(statusFile, file.info(statusFile)$size - 1)
-	} else {
-		statuses[scenarioName] <- 'not started'
-	}
+	statuses[scenarioName] <- scenarioStatus(scenarioName)
 }
 print(statuses)
 for (scenarioName in names(scenarios)) {
 	if (statuses[scenarioName] == 'not started') {
-		deployScenarioFile(scenarioName)
-		system(scenarios[[scenarioName]]$call)
+		submitScenario(scenarioName)
 		statuses[scenarioName] <- 'submitted'
-		writeLines(statuses[scenarioName], file.path(dataLocation, scenarios[[scenarioName]]$dir, 'status'))
 		cat(sprintf('Scenario %s run has been submitted to SLURM, please restart this script once the run has completed\n', scenarioName))
 	}
 }
@@ -95,6 +150,8 @@ for (scenarioName in names(scenarios)) {
 	}
 	if (statuses[scenarioName] == 'failed') {
 		cat(sprintf('Scenario %s run has failed, please check the LOG and then delete the status file\n', scenarioName))
+	} else if (statuses[scenarioName] == 'stale') {
+		cat(staleMessage(scenarioName))
 	} else {
 		cat(sprintf('Scenario %s run is %s.\n', scenarioName, statuses[scenarioName]))
 	}
