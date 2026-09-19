@@ -45,7 +45,7 @@ sliceVars <- list(
 		nTicks = 5
 	),
 	list(
-		variables = c('gdp_future_year_in_recession'),
+		variables = c('gdp_future_time_in_recession'),
 		name  = 'Years spent in recession',
 		unit  = 'years',
 		scale = 1,

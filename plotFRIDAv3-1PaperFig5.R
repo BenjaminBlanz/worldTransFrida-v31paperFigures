@@ -44,7 +44,7 @@ varsToPlot <- list(
 		ylim  = c(0, 120),
 		nTicks = 5
 	),
-	gdp_future_year_in_recession = list(
+	gdp_future_time_in_recession = list(
 		name  = 'Years spent in recession',
 		unit  = 'years',
 		scale = 1,
