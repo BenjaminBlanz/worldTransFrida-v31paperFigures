@@ -1,9 +1,9 @@
 source('config.R')
 source('plotOverlayedRunsFun.R')
 
-# the variables of Figure 7 as time series: instead of slicing the whole carbon
-# tax sweep at a few years, the 100 $/tCO2e run of each sweep is followed over
-# time next to the EMB baseline.
+# the variables of the carbon tax slice figure (FigNotUsed7) as time series:
+# instead of slicing the whole carbon tax sweep at a few years, the 100 $/tCO2e
+# run of each sweep is followed over time next to the EMB baseline.
 
 # overlay config ####
 # the two tax runs are sweep runs and so not part of resultFolders, which
@@ -24,8 +24,8 @@ plt.drawMedian    <- TRUE
 plt.drawCIOutline <- TRUE
 
 # vars ####
-# the rows of Figure 7, in the same order. Unlike there, ylim is given in raw data
-# units, it gets multiplied by scale when plotting
+# the rows of FigNotUsed7, in the same order. Unlike there, ylim is given in raw
+# data units, it gets multiplied by scale when plotting
 #
 # Figure layout:
 # STA   | GDPpp    | recession

@@ -39,7 +39,7 @@ calSeries <- lapply(names(varsToPlot), function(varName) {
 names(calSeries) <- names(varsToPlot)
 
 # joint plot ####
-cat('Plotting Figure 8\n')
+cat('Plotting FigureNotUsed8\n')
 setwd(homeWD)
 fig.dir  <- file.path('figures', 'multipanel')
 fig.w    <- 9
@@ -53,7 +53,7 @@ fig8.ncol            <- 2
 fig8.nrow            <- 1
 fig8.legendHeightMult <- 0.3
 
-png(file.path(fig.dir, 'Figure8.png'),
+png(file.path(fig.dir, 'FigureNotUsed8.png'),
 		width=fig.w * fig8.ncol, height=fig.h * (fig8.nrow + fig8.legendHeightMult),
 		units=fig.unit, res=fig.res)
 layout(
@@ -91,4 +91,4 @@ legend('center',
 			 col=c(rep(NA, length(overlayNames)), calCol),
 			 cex=1, ncol=length(overlayNames) + 1)
 dev.off()
-cat(sprintf('Figure saved to %s\n', file.path(fig.dir, 'Figure8.png')))
+cat(sprintf('Figure saved to %s\n', file.path(fig.dir, 'FigureNotUsed8.png')))

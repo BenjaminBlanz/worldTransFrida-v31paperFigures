@@ -131,7 +131,7 @@ sliceVars <- list(
 # has not produced results yet are dropped as if they were not configured, and
 # that is checked per variable, because a run being plotted right now can already
 # have one of them written and not the other
-cat('Plotting Figure 7\n')
+cat('Plotting FigureNotUsed7\n')
 setwd(homeWD)
 sliceVarNames <- unlist(lapply(sliceVars, `[[`, 'variables'))
 # what to call each variable in the warnings, the row name plus which of the
@@ -202,7 +202,7 @@ fig7.ncol            <- length(sliceYears)
 fig7.nrow            <- length(sliceVars)
 fig7.legendHeightMult <- 0.3
 
-png(file.path(fig.dir, 'Figure7.png'),
+png(file.path(fig.dir, 'FigureNotUsed7.png'),
 		width=fig.w * fig7.ncol, height=fig.h * (fig7.nrow + fig7.legendHeightMult),
 		units=fig.unit, res=fig.res)
 layout(
@@ -265,4 +265,4 @@ legend('center',
 			 fill=adjustcolor(overlayColors[drawnAnywhere], 0.2), cex=1,
 			 ncol=max(1, sum(drawnAnywhere)))
 dev.off()
-cat(sprintf('Figure saved to %s\n', file.path(fig.dir, 'Figure7.png')))
+cat(sprintf('Figure saved to %s\n', file.path(fig.dir, 'FigureNotUsed7.png')))
