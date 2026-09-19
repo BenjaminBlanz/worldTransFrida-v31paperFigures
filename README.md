@@ -49,9 +49,10 @@ They write `figures/multipanel/FigureNotUsedN.png` and are not built by
   are covered by private, central bank and government insurance, at a coverage level of 70
   phased in over 10 years.
 - **Carbon tax sweeps** (`ScenarioFiles/v31Doc_CCS_cX.csv`, `v31Doc_NoCCS_cX.csv`): a tax on
-  CO2e emissions that starts in 2030, reaches X $/tCO2e in 2035 and stays there, for X = 25
-  to 500 in steps of 25. In the CCS family the model chooses carbon storage endogenously; in
-  the NoCCS family that choice is switched off. Figure 5 uses the two 100 $/tCO2e runs.
+  CO2e emissions that starts in 2030, reaches X <span>$</span>/tCO2e in 2035 and stays there,
+  for X = 25 to 500 in steps of 25. In the CCS family the model chooses carbon storage
+  endogenously; in the NoCCS family that choice is switched off. Figure 5 uses the two
+  100 <span>$</span>/tCO2e runs.
 - **CCS** (`ScenarioFiles/v31Doc_ccs_scenario.csv`): prescribed, rising shares of stored
   emissions from coal, oil, gas and biofuel processes. It is run along with the others but
   is not shown in Figures 1 to 6.
