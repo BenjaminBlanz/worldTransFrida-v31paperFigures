@@ -65,7 +65,7 @@ varsToPlot <- list(
 )
 
 # joint plot ####
-cat('Plotting Figure 1\n')
+cat('Plotting Figure 3\n')
 setwd(homeWD)
 fig.dir  <- file.path('figures', 'multipanel')
 fig.w    <- 7
@@ -75,18 +75,18 @@ fig.res  <- 450
 fig.xlim <- c(figYearStart, figYearEnd)
 dir.create(fig.dir, FALSE, TRUE)
 
-fig1.ncol            <- 2
-fig1.nrow            <- 4
-fig1.legendHeightMult <- 0.3
+fig3.ncol            <- 2
+fig3.nrow            <- 4
+fig3.legendHeightMult <- 0.3
 
-png(file.path(fig.dir, 'Figure1.png'),
-		width=fig.w * fig1.ncol, height=fig.h * (fig1.nrow + fig1.legendHeightMult),
+png(file.path(fig.dir, 'Figure3.png'),
+		width=fig.w * fig3.ncol, height=fig.h * (fig3.nrow + fig3.legendHeightMult),
 		units=fig.unit, res=fig.res)
 layout(
-	matrix(c(1:(fig1.nrow * fig1.ncol), rep(fig1.nrow * fig1.ncol + 1, fig1.ncol)),
-				 byrow=TRUE, ncol=fig1.ncol),
-	widths  = rep(1, fig1.ncol),
-	heights = c(rep(1, fig1.nrow), fig1.legendHeightMult)
+	matrix(c(1:(fig3.nrow * fig3.ncol), rep(fig3.nrow * fig3.ncol + 1, fig3.ncol)),
+				 byrow=TRUE, ncol=fig3.ncol),
+	widths  = rep(1, fig3.ncol),
+	heights = c(rep(1, fig3.nrow), fig3.legendHeightMult)
 )
 for (var.i in seq_along(varsToPlot)) {
 	cat(sprintf('%3i of %3i : %s\n', var.i, length(varsToPlot), varsToPlot[[var.i]]$name))
@@ -105,4 +105,4 @@ legend('center',
 			 fill=adjustcolor(overlayColors, 0.2), cex=1,
 			 ncol=length(overlayNames))
 dev.off()
-cat(sprintf('Figure saved to %s\n', file.path(fig.dir, 'Figure1.png')))
+cat(sprintf('Figure saved to %s\n', file.path(fig.dir, 'Figure3.png')))

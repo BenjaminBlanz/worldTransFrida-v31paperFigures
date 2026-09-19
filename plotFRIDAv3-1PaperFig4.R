@@ -41,7 +41,7 @@ varsToPlot <- list(
 )
 
 # joint plot ####
-cat('Plotting Figure 2\n')
+cat('Plotting Figure 4\n')
 setwd(homeWD)
 fig.dir  <- file.path('figures', 'multipanel')
 fig.w    <- 7
@@ -51,18 +51,18 @@ fig.res  <- 450
 fig.xlim <- c(figYearStart, figYearEnd)
 dir.create(fig.dir, FALSE, TRUE)
 
-fig2.ncol            <- 2
-fig2.nrow            <- 2
-fig2.legendHeightMult <- 0.3
+fig4.ncol            <- 2
+fig4.nrow            <- 2
+fig4.legendHeightMult <- 0.3
 
-png(file.path(fig.dir, 'Figure2.png'),
-		width=fig.w * fig2.ncol, height=fig.h * (fig2.nrow + fig2.legendHeightMult),
+png(file.path(fig.dir, 'Figure4.png'),
+		width=fig.w * fig4.ncol, height=fig.h * (fig4.nrow + fig4.legendHeightMult),
 		units=fig.unit, res=fig.res)
 layout(
-	matrix(c(1:(fig2.nrow * fig2.ncol), rep(fig2.nrow * fig2.ncol + 1, fig2.ncol)),
-				 byrow=TRUE, ncol=fig2.ncol),
-	widths  = rep(1, fig2.ncol),
-	heights = c(rep(1, fig2.nrow), fig2.legendHeightMult)
+	matrix(c(1:(fig4.nrow * fig4.ncol), rep(fig4.nrow * fig4.ncol + 1, fig4.ncol)),
+				 byrow=TRUE, ncol=fig4.ncol),
+	widths  = rep(1, fig4.ncol),
+	heights = c(rep(1, fig4.nrow), fig4.legendHeightMult)
 )
 # not every variable exists in every run, only the runs that end up drawn
 # somewhere in the figure belong in the legend
@@ -93,4 +93,4 @@ legend('center',
 			 fill=adjustcolor(overlayColors[drawnAnywhere], 0.2), cex=1,
 			 ncol=sum(drawnAnywhere))
 dev.off()
-cat(sprintf('Figure saved to %s\n', file.path(fig.dir, 'Figure2.png')))
+cat(sprintf('Figure saved to %s\n', file.path(fig.dir, 'Figure4.png')))

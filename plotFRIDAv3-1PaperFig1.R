@@ -64,7 +64,7 @@ for (q in names(quadFits)) {
 }
 
 # plot ####
-cat('Plotting overburned area figure\n')
+cat('Plotting Figure 1\n')
 setwd(homeWD)
 fig.dir  <- file.path('figures', 'multipanel')
 fig.w    <- 12   # wider than a panel of the multipanel figures, the legend of
@@ -75,7 +75,7 @@ dir.create(fig.dir, FALSE, TRUE)
 
 oba.legendHeightMult <- 0.3
 
-png(file.path(fig.dir, 'FigureOverburnedArea.png'),
+png(file.path(fig.dir, 'Figure1.png'),
 		width=fig.w, height=fig.h * (1 + oba.legendHeightMult),
 		units=fig.unit, res=fig.res)
 layout(matrix(1:2, ncol=1), heights=c(1, oba.legendHeightMult))
@@ -127,4 +127,4 @@ legend('center',
 			 lty='solid', lwd=lwd, cex=0.9, ncol=3)
 dev.off()
 cat(sprintf('Figure saved to %s\n',
-						file.path(fig.dir, 'FigureOverburnedArea.png')))
+						file.path(fig.dir, 'Figure1.png')))

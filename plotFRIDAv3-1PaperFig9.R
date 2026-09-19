@@ -44,7 +44,7 @@ if (any(!hasCal)) {
 stopifnot(length(varsToPlot) > 0)
 
 # joint plot ####
-cat('Plotting calibration figure\n')
+cat('Plotting Figure 9\n')
 setwd(homeWD)
 fig.dir  <- file.path('figures', 'multipanel')
 fig.w    <- 9
@@ -58,7 +58,7 @@ cal.ncol            <- min(2, length(varsToPlot))
 cal.nrow            <- ceiling(length(varsToPlot) / cal.ncol)
 cal.legendHeightMult <- 0.3
 
-png(file.path(fig.dir, 'FigureCalibration.png'),
+png(file.path(fig.dir, 'Figure9.png'),
 		width=fig.w * cal.ncol, height=fig.h * (cal.nrow + cal.legendHeightMult),
 		units=fig.unit, res=fig.res)
 layout(
@@ -95,4 +95,4 @@ legend('center',
 			 # side by side is wider than a one panel figure, so stack them instead
 			 cex=1, ncol=if (cal.ncol > 1) 2 else 1)
 dev.off()
-cat(sprintf('Figure saved to %s\n', file.path(fig.dir, 'FigureCalibration.png')))
+cat(sprintf('Figure saved to %s\n', file.path(fig.dir, 'Figure9.png')))

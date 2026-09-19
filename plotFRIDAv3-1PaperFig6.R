@@ -99,7 +99,7 @@ varsToPlot <- list(
 		scale = 1,
 		ylim  = c(0, 4)
 	)#,
-	# further variables, uncomment to include (adjust fig3.ncol/fig3.nrow to match)
+	# further variables, uncomment to include (adjust fig6.ncol/fig6.nrow to match)
 	# gdp_government_consumption_in_2021c = list(
 	# 	name  = 'Government Consumption',
 	# 	unit  = 'trillion 2021 intl. $/year',
@@ -133,7 +133,7 @@ varsToPlot <- list(
 )
 
 # joint plot ####
-cat('Plotting Figure 3\n')
+cat('Plotting Figure 6\n')
 setwd(homeWD)
 fig.dir  <- file.path('figures', 'multipanel')
 fig.w    <- 7
@@ -143,18 +143,18 @@ fig.res  <- 450
 fig.xlim <- c(figYearStart, figYearEnd)
 dir.create(fig.dir, FALSE, TRUE)
 
-fig3.ncol            <- 3
-fig3.nrow            <- 4
-fig3.legendHeightMult <- 0.3
+fig6.ncol            <- 3
+fig6.nrow            <- 4
+fig6.legendHeightMult <- 0.3
 
-png(file.path(fig.dir, 'Figure3.png'),
-		width=fig.w * fig3.ncol, height=fig.h * (fig3.nrow + fig3.legendHeightMult),
+png(file.path(fig.dir, 'Figure6.png'),
+		width=fig.w * fig6.ncol, height=fig.h * (fig6.nrow + fig6.legendHeightMult),
 		units=fig.unit, res=fig.res)
 layout(
-	matrix(c(1:(fig3.nrow * fig3.ncol), rep(fig3.nrow * fig3.ncol + 1, fig3.ncol)),
-				 byrow=TRUE, ncol=fig3.ncol),
-	widths  = rep(1, fig3.ncol),
-	heights = c(rep(1, fig3.nrow), fig3.legendHeightMult)
+	matrix(c(1:(fig6.nrow * fig6.ncol), rep(fig6.nrow * fig6.ncol + 1, fig6.ncol)),
+				 byrow=TRUE, ncol=fig6.ncol),
+	widths  = rep(1, fig6.ncol),
+	heights = c(rep(1, fig6.nrow), fig6.legendHeightMult)
 )
 for (var.i in seq_along(varsToPlot)) {
 	cat(sprintf('%3i of %3i : %s\n', var.i, length(varsToPlot), varsToPlot[[var.i]]$name))
@@ -173,4 +173,4 @@ legend('center',
 			 fill=adjustcolor(overlayColors, 0.2), cex=1,
 			 ncol=length(overlayNames))
 dev.off()
-cat(sprintf('Figure saved to %s\n', file.path(fig.dir, 'Figure3.png')))
+cat(sprintf('Figure saved to %s\n', file.path(fig.dir, 'Figure6.png')))

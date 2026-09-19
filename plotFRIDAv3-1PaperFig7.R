@@ -131,7 +131,7 @@ sliceVars <- list(
 # has not produced results yet are dropped as if they were not configured, and
 # that is checked per variable, because a run being plotted right now can already
 # have one of them written and not the other
-cat('Plotting Figure 4\n')
+cat('Plotting Figure 7\n')
 setwd(homeWD)
 sliceVarNames <- unlist(lapply(sliceVars, `[[`, 'variables'))
 # what to call each variable in the warnings, the row name plus which of the
@@ -198,25 +198,25 @@ fig.xlim <- range(sweepBaselineValue,
 									unlist(lapply(carbonTaxSweeps[sweepsToPlot], `[[`, 'value')))
 dir.create(fig.dir, FALSE, TRUE)
 
-fig4.ncol            <- length(sliceYears)
-fig4.nrow            <- length(sliceVars)
-fig4.legendHeightMult <- 0.3
+fig7.ncol            <- length(sliceYears)
+fig7.nrow            <- length(sliceVars)
+fig7.legendHeightMult <- 0.3
 
-png(file.path(fig.dir, 'Figure4.png'),
-		width=fig.w * fig4.ncol, height=fig.h * (fig4.nrow + fig4.legendHeightMult),
+png(file.path(fig.dir, 'Figure7.png'),
+		width=fig.w * fig7.ncol, height=fig.h * (fig7.nrow + fig7.legendHeightMult),
 		units=fig.unit, res=fig.res)
 layout(
-	matrix(c(1:(fig4.nrow * fig4.ncol), rep(fig4.nrow * fig4.ncol + 1, fig4.ncol)),
-				 byrow=TRUE, ncol=fig4.ncol),
-	widths  = rep(1, fig4.ncol),
-	heights = c(rep(1, fig4.nrow), fig4.legendHeightMult)
+	matrix(c(1:(fig7.nrow * fig7.ncol), rep(fig7.nrow * fig7.ncol + 1, fig7.ncol)),
+				 byrow=TRUE, ncol=fig7.ncol),
+	widths  = rep(1, fig7.ncol),
+	heights = c(rep(1, fig7.nrow), fig7.legendHeightMult)
 )
 drawnAnywhere <- rep(FALSE, length(sweepsToPlot))
 for (v.i in seq_along(sliceVars)) {
 	sliceVar <- sliceVars[[v.i]]
 	for (y.i in seq_along(sliceYears)) {
 		panel.i <- (v.i - 1) * length(sliceYears) + y.i
-		cat(sprintf('%3i of %3i : %s in %i\n', panel.i, fig4.nrow * fig4.ncol,
+		cat(sprintf('%3i of %3i : %s in %i\n', panel.i, fig7.nrow * fig7.ncol,
 								sliceVar$name, sliceYears[y.i]))
 		# one series per family per variable of this row
 		overlaid <- length(sliceVar$variables) > 1
@@ -265,4 +265,4 @@ legend('center',
 			 fill=adjustcolor(overlayColors[drawnAnywhere], 0.2), cex=1,
 			 ncol=max(1, sum(drawnAnywhere)))
 dev.off()
-cat(sprintf('Figure saved to %s\n', file.path(fig.dir, 'Figure4.png')))
+cat(sprintf('Figure saved to %s\n', file.path(fig.dir, 'Figure7.png')))

@@ -22,7 +22,7 @@ plotDataSubDir     <- file.path('figures', 'CI-plots', 'completeEquallyWeighted'
 
 # run configuration ####
 numSample          <- "100000"
-expIDprePreString  <- 'UA-v3-1-2026-08-22'
+expIDprePreString  <- 'UA-v3-1-2026-09-14'
 likeCutoffRatio    <- 1000
 varNameExtra       <- '-fit uncertainty-completeEqually-weighted.RDS'
 # the part of a run directory name that all scenarios share. Mirrors the climate

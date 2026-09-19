@@ -39,7 +39,7 @@ calSeries <- lapply(names(varsToPlot), function(varName) {
 names(calSeries) <- names(varsToPlot)
 
 # joint plot ####
-cat('Plotting Figure 5\n')
+cat('Plotting Figure 8\n')
 setwd(homeWD)
 fig.dir  <- file.path('figures', 'multipanel')
 fig.w    <- 9
@@ -49,18 +49,18 @@ fig.res  <- 450
 fig.xlim <- c(1980, 2100)
 dir.create(fig.dir, FALSE, TRUE)
 
-fig5.ncol            <- 2
-fig5.nrow            <- 1
-fig5.legendHeightMult <- 0.3
+fig8.ncol            <- 2
+fig8.nrow            <- 1
+fig8.legendHeightMult <- 0.3
 
-png(file.path(fig.dir, 'Figure5.png'),
-		width=fig.w * fig5.ncol, height=fig.h * (fig5.nrow + fig5.legendHeightMult),
+png(file.path(fig.dir, 'Figure8.png'),
+		width=fig.w * fig8.ncol, height=fig.h * (fig8.nrow + fig8.legendHeightMult),
 		units=fig.unit, res=fig.res)
 layout(
-	matrix(c(1:(fig5.nrow * fig5.ncol), rep(fig5.nrow * fig5.ncol + 1, fig5.ncol)),
-				 byrow=TRUE, ncol=fig5.ncol),
-	widths  = rep(1, fig5.ncol),
-	heights = c(rep(1, fig5.nrow), fig5.legendHeightMult)
+	matrix(c(1:(fig8.nrow * fig8.ncol), rep(fig8.nrow * fig8.ncol + 1, fig8.ncol)),
+				 byrow=TRUE, ncol=fig8.ncol),
+	widths  = rep(1, fig8.ncol),
+	heights = c(rep(1, fig8.nrow), fig8.legendHeightMult)
 )
 for (var.i in seq_along(varsToPlot)) {
 	varName <- names(varsToPlot)[var.i]
@@ -91,4 +91,4 @@ legend('center',
 			 col=c(rep(NA, length(overlayNames)), calCol),
 			 cex=1, ncol=length(overlayNames) + 1)
 dev.off()
-cat(sprintf('Figure saved to %s\n', file.path(fig.dir, 'Figure5.png')))
+cat(sprintf('Figure saved to %s\n', file.path(fig.dir, 'Figure8.png')))

@@ -1,7 +1,7 @@
 source('config.R')
 source('plotOverlayedRunsFun.R')
 
-# the variables of Figure 4 as time series: instead of slicing the whole carbon
+# the variables of Figure 7 as time series: instead of slicing the whole carbon
 # tax sweep at a few years, the 100 $/tCO2e run of each sweep is followed over
 # time next to the EMB baseline.
 
@@ -24,7 +24,7 @@ plt.drawMedian    <- TRUE
 plt.drawCIOutline <- TRUE
 
 # vars ####
-# the rows of Figure 4, in the same order. Unlike there, ylim is given in raw data
+# the rows of Figure 7, in the same order. Unlike there, ylim is given in raw data
 # units, it gets multiplied by scale when plotting
 #
 # Figure layout:
@@ -72,7 +72,7 @@ varsToPlot <- list(
 )
 
 # joint plot ####
-cat('Plotting Figure 4b\n')
+cat('Plotting Figure 5\n')
 setwd(homeWD)
 for (o.i in which(!dir.exists(dataFolders))) {
 	cat(sprintf('WARNING: no results for %s (%s) in\n  %s\n  it is left out of the figure.\n',
@@ -86,18 +86,18 @@ fig.res  <- 450
 fig.xlim <- c(figYearStart, figYearEnd)
 dir.create(fig.dir, FALSE, TRUE)
 
-fig4b.ncol            <- 3
-fig4b.nrow            <- 2
-fig4b.legendHeightMult <- 0.3
+fig5.ncol            <- 3
+fig5.nrow            <- 2
+fig5.legendHeightMult <- 0.3
 
-png(file.path(fig.dir, 'Figure4b.png'),
-		width=fig.w * fig4b.ncol, height=fig.h * (fig4b.nrow + fig4b.legendHeightMult),
+png(file.path(fig.dir, 'Figure5.png'),
+		width=fig.w * fig5.ncol, height=fig.h * (fig5.nrow + fig5.legendHeightMult),
 		units=fig.unit, res=fig.res)
 layout(
-	matrix(c(1:(fig4b.nrow * fig4b.ncol), rep(fig4b.nrow * fig4b.ncol + 1, fig4b.ncol)),
-				 byrow=TRUE, ncol=fig4b.ncol),
-	widths  = rep(1, fig4b.ncol),
-	heights = c(rep(1, fig4b.nrow), fig4b.legendHeightMult)
+	matrix(c(1:(fig5.nrow * fig5.ncol), rep(fig5.nrow * fig5.ncol + 1, fig5.ncol)),
+				 byrow=TRUE, ncol=fig5.ncol),
+	widths  = rep(1, fig5.ncol),
+	heights = c(rep(1, fig5.nrow), fig5.legendHeightMult)
 )
 drawnAnywhere <- rep(FALSE, length(overlayNames))
 for (var.i in seq_along(varsToPlot)) {
@@ -118,4 +118,4 @@ legend('center',
 			 fill=adjustcolor(overlayColors[drawnAnywhere], 0.2), cex=1,
 			 ncol=max(1, sum(drawnAnywhere)))
 dev.off()
-cat(sprintf('Figure saved to %s\n', file.path(fig.dir, 'Figure4b.png')))
+cat(sprintf('Figure saved to %s\n', file.path(fig.dir, 'Figure5.png')))
