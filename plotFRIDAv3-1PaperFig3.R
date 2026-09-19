@@ -2,138 +2,70 @@ source('config.R')
 source('plotOverlayedRunsFun.R')
 
 # overlay config ####
-overlayNames  <- c('EMB', 'Gov. Inv.', 'Insurance')
+overlayNames  <- c('v2.1', 'v3.1')
 overlayColors <- unname(paperCols[overlayNames])
 dataFolders   <- unname(resultFolders[overlayNames])
 
-CIsToPlot      <- c(0.67)
+CIsToPlot      <- c(0.67, 0.95)
 lwd            <- 1.5
 plt.drawMedian    <- TRUE
 plt.drawCIOutline <- TRUE
 
 # vars ####
-# ylim is given in raw data units, it gets multiplied by scale when plotting
-# Figure order is order of this list by row
-# 
-# Figure layout:
-# GDP | Inf | prod
-# pC  | Sint| unemp
-# pI  | lFai| trans
-# gE  | Rint| debt
 varsToPlot <- list(
-	gdp_real_gdp_in_2021c = list(
-		name  = 'GDP',
-		unit  = 'trillion 2021 intl. $/year',
-		scale = 1e-3,
-		ylim  = c(0, 1600)*1e3,
-		nTicks = 5
-	),
-	inflation_inflation_rate = list(
-		name  = 'Inflation Rate',
-		unit  = '% per year',
-		scale = 100,
-		ylim  = c(-2, 6)/100
-	),
-	employment_realised_productivity_growth = list(
-		name  = 'Productivity Growth',
-		unit  = '% per year',
-		scale = 100,
-		ylim  = c(0.5, 3)/100
-	),
-	circular_flow_real_private_consumption_2021c = list(
-		name  = 'Private Consumption',
-		unit  = 'trillion 2021 intl. $/year',
-		scale = 1e-3,
-		ylim  = c(0, 1200)*1e3,
-		nTicks = 5
-	),
-	government_central_bank_safe_interest = list(
-		name  = 'Safe Interest Rate',
-		unit  = '% per year',
-		scale = 100,
-		ylim  = c(0, 6)/100,
-		nTicks = 4
-	),
-	employment_unemployment_rate = list(
-		name  = 'Unemployment Rate',
-		unit  = '% of labour pool',
-		scale = 100,
-		ylim  = c(4, 10)/100,
-		nTicks = 4
-	),
-	gdp_private_investment_in_in_2021c = list(
-		name  = 'Private Investment',
-		unit  = 'trillion 2021 intl. $/year',
-		scale = 1e-3,
-		ylim  = c(0, 300)*1e3,
-		nTicks = 4
-	),
-	finance_failure_rate = list(
-		name  = 'Loan Failure Rate',
-		unit  = '% per year',
-		scale = 100,
-		ylim  = c(0, 12)/100,
-		nTicks = 4
-	),
-	government_government_transfers_as_a_share_of_public_expenditure = list(
-		name  = 'Transfers as Share of Gov. Exp.',
-		unit  = 'ratio',
+	energy_balance_model_surface_temperature_anomaly = list(
+		name  = 'Surface Temperature Anomaly',
+		unit  = '°C',
 		scale = 1,
-		ylim  = c(0, 0.8)
+		ylim  = c(0, 8)
 	),
-	government_public_expenditure_in_2021c = list(
-		name  = 'Government Expenditure',
-		unit  = 'trillion 2021 intl. $/year',
-		scale = 1e-3,
-		ylim  = c(0, 500)*1e3
-	),
-	finance_risky_interest = list(
-		name  = 'Risky Interest Rate',
-		unit  = '% per year',
-		scale = 100,
-		ylim  = c(0, 20)/100
-	),
-	government_debt_to_gdp_ratio = list(
-		name  = 'Debt to GDP Ratio',
-		unit  = 'ratio',
+	demographics_real_gdp_per_person = list(
+		name  = 'GDP per Person',
+		unit  = 'thsnd. 2021 intl. $ / person',
 		scale = 1,
-		ylim  = c(0, 4)
-	)#,
-	# further variables, uncomment to include (adjust fig3.ncol/fig3.nrow to match)
-	# gdp_government_consumption_in_2021c = list(
-	# 	name  = 'Government Consumption',
-	# 	unit  = 'trillion 2021 intl. $/year',
-	# 	scale = 1e-3,
-	# 	ylim  = c(0, 200)*1e3
-	# ),
-	# gdp_public_investment_in_2021c = list(
-	# 	name  = 'Public Investment',
-	# 	unit  = 'trillion 2021 intl. $/year',
-	# 	scale = 1e-3,
-	# 	ylim  = c(0, 150)*1e3
-	# ),
-	# finance_measured_default_rate_of_all_assets = list(
-	# 	name  = 'Default Rate',
-	# 	unit  = 'rate',
-	# 	scale = 1,
-	# 	ylim  = c(0, 0.04)
-	# ),
-	# finance_measured_default_rate_of_risky_assets = list(
-	# 	name  = 'Default Rate of Risky Loans',
-	# 	unit  = 'rate',
-	# 	scale = 1,
-	# 	ylim  = c(0, 0.04)
-	# ),
-	# finance_measured_default_rate_of_safe_assets = list(
-	# 	name  = 'Default Rate of Safe Loans',
-	# 	unit  = 'rate',
-	# 	scale = 1,
-	# 	ylim  = c(0, 0.04)
-	# )
+		ylim  = c(0,120)
+	),
+	demographics_population = list(
+		name  = 'Population',
+		unit  = 'billion people',
+		scale = 1e-3,
+		ylim  = c(0,12)*1e3
+	),
+	land_use_cropland = list(
+		name  = 'Cropland',
+		unit  = 'MHa',
+		scale = 1,
+		ylim  = c(0,5000)
+	),
+	land_use_forest_land = list(
+		name  = 'Forest Land',
+		unit  = 'MHa',
+		scale = 1,
+		ylim  = c(0,5000)
+	),
+	land_use_grassland = list(
+		name  = 'Grassland',
+		unit  = 'MHa',
+		scale = 1,
+		ylim  = c(0,5000)
+	),
+	energy_demand_demand_for_energy = list(
+		name  = 'Energy Demand',
+		unit  = 'EWh per year',
+		scale = 1e-3,
+		ylim  = c(0, 300)*1e3
+	),
+	land_nutrients_fertilizer_use = list(
+		name  = 'Fertilizer Use',
+		unit  = 'MtN/year',
+		scale = 1,
+		ylim  = c(0,400)#,
+		# nTicks = 5
+	)
 )
 
 # joint plot ####
-cat('Plotting Figure 3\n')
+cat('Plotting Figure 1\n')
 setwd(homeWD)
 fig.dir  <- file.path('figures', 'multipanel')
 fig.w    <- 7
@@ -143,18 +75,18 @@ fig.res  <- 450
 fig.xlim <- c(figYearStart, figYearEnd)
 dir.create(fig.dir, FALSE, TRUE)
 
-fig3.ncol            <- 3
-fig3.nrow            <- 4
-fig3.legendHeightMult <- 0.3
+fig1.ncol            <- 2
+fig1.nrow            <- 4
+fig1.legendHeightMult <- 0.3
 
-png(file.path(fig.dir, 'Figure3.png'),
-		width=fig.w * fig3.ncol, height=fig.h * (fig3.nrow + fig3.legendHeightMult),
+png(file.path(fig.dir, 'Figure1.png'),
+		width=fig.w * fig1.ncol, height=fig.h * (fig1.nrow + fig1.legendHeightMult),
 		units=fig.unit, res=fig.res)
 layout(
-	matrix(c(1:(fig3.nrow * fig3.ncol), rep(fig3.nrow * fig3.ncol + 1, fig3.ncol)),
-				 byrow=TRUE, ncol=fig3.ncol),
-	widths  = rep(1, fig3.ncol),
-	heights = c(rep(1, fig3.nrow), fig3.legendHeightMult)
+	matrix(c(1:(fig1.nrow * fig1.ncol), rep(fig1.nrow * fig1.ncol + 1, fig1.ncol)),
+				 byrow=TRUE, ncol=fig1.ncol),
+	widths  = rep(1, fig1.ncol),
+	heights = c(rep(1, fig1.nrow), fig1.legendHeightMult)
 )
 for (var.i in seq_along(varsToPlot)) {
 	cat(sprintf('%3i of %3i : %s\n', var.i, length(varsToPlot), varsToPlot[[var.i]]$name))
@@ -173,4 +105,4 @@ legend('center',
 			 fill=adjustcolor(overlayColors, 0.2), cex=1,
 			 ncol=length(overlayNames))
 dev.off()
-cat(sprintf('Figure saved to %s\n', file.path(fig.dir, 'Figure3.png')))
+cat(sprintf('Figure saved to %s\n', file.path(fig.dir, 'Figure1.png')))

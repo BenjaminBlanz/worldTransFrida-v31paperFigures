@@ -1,96 +1,131 @@
 source('config.R')
 source('plotOverlayedRunsFun.R')
 
+# calibration figure: the frida default run against the data it was fitted to,
+# over the historical period. Add entries to varsToPlot to get more panels.
+
 # overlay config ####
-overlayNames  <- c('v2.1', 'v3.1')
+overlayNames  <- c('v3.1')
 overlayColors <- unname(paperCols[overlayNames])
 dataFolders   <- unname(resultFolders[overlayNames])
 
-CIsToPlot      <- c(0.67, 0.95)
-lwd            <- 1.5
-plt.drawMedian    <- TRUE
-plt.drawCIOutline <- TRUE
+lwd    <- 1.5
+calCol <- 'red'          # the calibration data FRIDA was fitted to
+calPch <- 20
 
 # vars ####
-# ylim is given in raw data units, it gets multiplied by scale when plotting
+# ylim is given in raw data units, it gets multiplied by scale when plotting.
+# nTicks forces the number of y tick marks, pick an ylim that divides evenly by
+# nTicks - 1 to keep the labels round
 varsToPlot <- list(
-	land_use_global_burned_area_due_to_climate_change = list(
-		name  = 'Burned Area due to Climate Change',
-		unit  = 'MHa/year',
-		scale = 1,
-		ylim  = c(0, 300)
+	fertilizer_demand_total_yearly_demand = list(
+		name   = 'Fertilizer Demand',
+		unit   = 'Mt N / year',
+		scale  = 1,
+		ylim   = c(75, 150),
+		nTicks = 4
 	),
-	transportation_energy_demand_average_daily_demand_per_capita = list(
-		name  = 'Transportation Energy Demand',
-		unit  = 'kWh/person/day',
-		scale = 1e3,
-		ylim  = c(0, 20)*1e-3
-	),
-	wind_energy_wind_energy_full_load_hours = list(
-		name  = 'Wind Energy Full Load Hours',
-		unit  = 'hours/year',
-		scale = 1,
-		ylim  = c(1750, 1800)
+	transportation_energy_demand_total_yearly_demand = list(
+		name   = 'Transportation Energy Demand',
+		unit   = 'EWh / year',
+		scale  = 1e-9,
+		ylim   = c(0, 2.5e10)
 	),
 	demographics_life_expectancy = list(
-		name  = 'Life Expectancy',
-		unit  = 'years',
-		scale = 1,
-		ylim  = c(60, 90)
+		name   = 'Life Expectancy at Birth',
+		unit   = 'years',
+		scale  = 1,
+		ylim   = c(0, 100)
+	),
+	wind_energy_wind_energy_full_load_hours = list(
+		name   = 'Wind Energy FLH',
+		unit   = 'hours/year',
+		scale  = 1,
+		ylim   = c(0, 2000)
 	)
 )
-
-# joint plot ####
-cat('Plotting Figure 2\n')
-setwd(homeWD)
-fig.dir  <- file.path('figures', 'multipanel')
-fig.w    <- 7
-fig.h    <- 5
-fig.unit <- 'cm'
-fig.res  <- 450
-fig.xlim <- c(figYearStart, figYearEnd)
-dir.create(fig.dir, FALSE, TRUE)
-
-fig2.ncol            <- 2
-fig2.nrow            <- 2
-fig2.legendHeightMult <- 0.3
-
-png(file.path(fig.dir, 'Figure2.png'),
-		width=fig.w * fig2.ncol, height=fig.h * (fig2.nrow + fig2.legendHeightMult),
-		units=fig.unit, res=fig.res)
-layout(
-	matrix(c(1:(fig2.nrow * fig2.ncol), rep(fig2.nrow * fig2.ncol + 1, fig2.ncol)),
-				 byrow=TRUE, ncol=fig2.ncol),
-	widths  = rep(1, fig2.ncol),
-	heights = c(rep(1, fig2.nrow), fig2.legendHeightMult)
-)
-# not every variable exists in every run, only the runs that end up drawn
-# somewhere in the figure belong in the legend
-drawnAnywhere <- rep(FALSE, length(dataFolders))
-for (var.i in seq_along(varsToPlot)) {
-	par(mar=c(2, 2.4, 2, 1), mgp=c(1.4, 0.5, 0))
-	available <- plotOverlayedRuns(dataFolders, overlayColors, names(varsToPlot)[var.i], CIsToPlot,
-																 xlim=fig.xlim, xTicks=figYearTicks, xlab='',
-																 titlePrepend=paste0(letters[var.i], ') '),
-																 drawMedian=plt.drawMedian,
-																 drawCIOutline=plt.drawCIOutline)
-	drawnAnywhere <- drawnAnywhere | available
-	cat(sprintf('%3i of %3i : %-34s %s\n', var.i, length(varsToPlot),
-							varsToPlot[[var.i]]$name,
-							if (all(available)) {
-								'all runs'
-							} else {
-								sprintf('only %s, not in %s',
-												paste(overlayNames[available], collapse=', '),
-												paste(overlayNames[!available], collapse=', '))
-							}))
+varsToPlot.orig <-varsToPlot
+for(pl.i in 0:length(varsToPlot)){
+	if (pl.i>0){
+		varsToPlot <- list(varsToPlot.orig[[names(varsToPlot.orig)[pl.i]]])
+		names(varsToPlot)[1] <- names(varsToPlot.orig)[pl.i]
+		
+	} else {
+		varsToPlot <- varsToPlot.orig
+	}
+	
+	# only variables that were actually calibrated against data belong here
+	calSeries <- lapply(names(varsToPlot), function(varName) {
+		orig <- readRDS(file.path(dataFolders[1], paste0(varName, varNameExtra)))$varName.orig
+		calibrationSeries(orig)
+	})
+	names(calSeries) <- names(varsToPlot)
+	hasCal <- !sapply(calSeries, is.null)
+	if (any(!hasCal)) {
+		cat(sprintf(paste0('WARNING: no calibration data for %s,\n',
+											 '  dropped from the figure.\n'),
+								paste(sapply(varsToPlot[!hasCal], `[[`, 'name'), collapse=', ')))
+		varsToPlot <- varsToPlot[hasCal]
+		calSeries  <- calSeries[hasCal]
+	}
+	stopifnot(length(varsToPlot) > 0)
+	
+	# joint plot ####
+	# the first figure holds all variables side by side, every further one a single
+	# variable
+	fig.file <- paste0('FigureJointCalibration', pl.i, '.png')
+	cat(sprintf('Plotting calibration figure %i of %i (%s): %s\n',
+							pl.i + 1, length(varsToPlot.orig) + 1, fig.file,
+							paste(sapply(varsToPlot, `[[`, 'name'), collapse=', ')))
+	setwd(homeWD)
+	fig.dir  <- file.path('figures', 'multipanel')
+	fig.w    <- 9
+	fig.h    <- 6
+	fig.unit <- 'cm'
+	fig.res  <- 450
+	fig.xlim <- c(1980, 2030)
+	dir.create(fig.dir, FALSE, TRUE)
+	
+	cal.ncol            <- length(varsToPlot)
+	cal.nrow            <- 1
+	cal.legendHeightMult <- 0.3
+	
+	png(file.path(fig.dir, fig.file),
+			width=fig.w * cal.ncol, height=fig.h * (cal.nrow + cal.legendHeightMult),
+			units=fig.unit, res=fig.res)
+	layout(
+		matrix(c(1:(cal.nrow * cal.ncol), rep(cal.nrow * cal.ncol + 1, cal.ncol)),
+					 byrow=TRUE, ncol=cal.ncol),
+		widths  = rep(1, cal.ncol),
+		heights = c(rep(1, cal.nrow), cal.legendHeightMult)
+	)
+	for (var.i in seq_along(varsToPlot)) {
+		varName <- names(varsToPlot)[var.i]
+		cat(sprintf('%3i of %3i : %-30s %i calibration points, %i to %i\n',
+								var.i, length(varsToPlot), varsToPlot[[var.i]]$name,
+								nrow(calSeries[[varName]]),
+								min(calSeries[[varName]]$year), max(calSeries[[varName]]$year)))
+		par(mar=c(2, 2.4, 2, 1), mgp=c(1.4, 0.5, 0))
+		# no CI bands and no median, this figure is about the fit and not the spread.
+		# ylim is left to varsToPlot so that it and nTicks stay in one place
+		plotOverlayedRuns(dataFolders, overlayColors, varName, CIsToPlot=numeric(0),
+											xlim=fig.xlim, xlab='',
+											# a single panel needs no panel letter
+											titlePrepend=if (length(varsToPlot) > 1) paste0(letters[var.i], ') ') else '',
+											drawMedian=FALSE, drawCIOutline=FALSE,
+											drawDefaultRun=TRUE, lwd=lwd)
+		points(calSeries[[varName]]$year,
+					 calSeries[[varName]]$value * varsToPlot[[varName]]$scale,
+					 col=calCol, pch=calPch)
+	}
+	par(mar=c(0, 0, 0, 0))
+	plot(0, 0, type='n', axes=FALSE, xlab='', ylab='')
+	legend('center',
+				 legend=c('calibrated run', 'calibration data'),
+				 lty=c('solid', NA), lwd=c(lwd, NA),
+				 pch=c(NA, calPch), col=c(overlayColors[1], calCol),
+				 # side by side is wider than a one panel figure, so stack them instead
+				 cex=1, ncol=if (cal.ncol > 1) 2 else 1)
+	dev.off()
+	cat(sprintf('Figure saved to %s\n', file.path(fig.dir, fig.file)))
 }
-par(mar=c(0, 0, 0, 0))
-plot(0, 0, type='n', axes=FALSE, xlab='', ylab='')
-legend('center',
-			 legend=overlayNames[drawnAnywhere],
-			 border=overlayColors[drawnAnywhere],
-			 fill=adjustcolor(overlayColors[drawnAnywhere], 0.2), cex=1,
-			 ncol=sum(drawnAnywhere))
-dev.off()
-cat(sprintf('Figure saved to %s\n', file.path(fig.dir, 'Figure2.png')))
