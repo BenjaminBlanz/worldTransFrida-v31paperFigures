@@ -79,8 +79,9 @@ The time axis and the colour of each ensemble are set once in `config.R` (`figYe
 The ensembles were run with 100 000 samples each, which leaves about 73 GB of output per
 run. `data/` holds a digest of each run instead, written by `runMakeDigest.R` of
 [WorldTransFrida-Uncertainty](https://github.com/BenjaminBlanz/WorldTransFrida-Uncertainty)
-at commit ae197c9. A digest keeps the run's metadata and top level files, its sample points
-(`samplePoints.csv.gz`), the representative sample (`repSample/`) and its `figures/` folder
+at commit 19f135f. A digest keeps the run's metadata and top level files, its sample points
+(`samplePoints.csv.gz`), the representative sample (`repSample/`), the scripts and
+configuration the run was made with (`runScriptsAndConfiguration/`) and its `figures/` folder
 without the images. The figures read only the plot data in
 `figures/CI-plots/completeEquallyWeighted/plotData/`. The per variable output of every
 sample (`detectedParmSpace/`) is left out. `digest.txt` in each digest names the source,
