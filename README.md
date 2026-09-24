@@ -1,8 +1,8 @@
 # FRIDA v3.1 overview paper: figures
 
-This repository holds the R scripts behind the figures of the FRIDA v3.1 overview paper.
-They set up and submit the scenario ensembles the paper discusses, and draw Figures 1 to 6
-from the results.
+This package holds the R scripts behind the figures of the FRIDA v3.1 overview paper and a
+digest of every model ensemble they read, so Figures 1 to 6 can be rebuilt without the
+full runs.
 
 ## Paper
 
@@ -30,12 +30,6 @@ Each paper figure has one script, `plotFRIDAv3-1PaperFigN.R`, which writes
 | 5 | `plotFRIDAv3-1PaperFig5.R` | EMB against the 100 $/tCO2e carbon tax runs with and without CCS, 2025 to 2150: surface temperature anomaly, GDP per person, years spent in recession, inflation index, share of energy CO2 captured and stored CO2. Median with 67 % range. |
 | 6 | `plotFRIDAv3-1PaperFig6.R` | EMB against the government investment and insurance scenarios, 2025 to 2150: GDP, inflation rate, productivity growth, private consumption, safe and risky interest rates, unemployment rate, private investment, loan failure rate, transfers as share of government expenditure, government expenditure and debt to GDP ratio. Median with 67 % range. |
 
-The scripts `plotFRIDAv3-1PaperFigNotUsed7.R` to `FigNotUsed9.R` draw figures that did not
-make it into the paper: the carbon tax sweeps sliced at 2050, 2100 and 2150, fertilizer
-demand and feedstock price against calibration data, and a single panel calibration figure.
-They write `figures/multipanel/FigureNotUsedN.png` and are not built by
-`runFRIDAv3-1PaperAll.R`.
-
 ## Scenarios
 
 - **EMB**: the FRIDA v3.1 baseline. It is the v3.1 ensemble in Figures 2 to 4 and the
@@ -52,85 +46,97 @@ They write `figures/multipanel/FigureNotUsedN.png` and are not built by
   CO2e emissions that starts in 2030, reaches X <span>$</span>/tCO2e in 2035 and stays there,
   for X = 25 to 500 in steps of 25. In the CCS family the model chooses carbon storage
   endogenously; in the NoCCS family that choice is switched off. Figure 5 uses the two
-  100 <span>$</span>/tCO2e runs.
+  100 <span>$</span>/tCO2e runs, the only ones of the sweeps in this package.
 - **CCS** (`ScenarioFiles/v31Doc_ccs_scenario.csv`): prescribed, rising shares of stored
   emissions from coal, oil, gas and biofuel processes. It is run along with the others but
   is not shown in Figures 1 to 6.
 
 ## Requirements
 
-- R 4.0 or later. The scripts use base R only.
-- **Run data.** The figures (except Figure 1) read the summary data of the ensembles, which
-  every run keeps in `figures/CI-plots/completeEquallyWeighted/plotData/` of its run folder.
-  The EMB and scenario ensembles will be available for download on Zenodo. The link will be
-  added here.
-- **Making the runs yourself.** The ensembles are made with the FRIDA uncertainty analysis,
-  [WorldTransFrida-Uncertainty](https://github.com/BenjaminBlanz/WorldTransFrida-Uncertainty),
-  which runs the model, [WorldTransFRIDA](https://github.com/metno/WorldTransFRIDA), through
-  the Stella Simulator. Its README explains the setup. The runs are submitted through SLURM
-  (the scripts were written for DKRZ Levante), but a cluster is not required. That
-  repository has stand-ins for `sbatch`, `squeue` and `scancel` in `localSlurm/` that run
-  the same jobs on a single machine, see
-  [Running the same job without SLURM](https://github.com/BenjaminBlanz/WorldTransFrida-Uncertainty#running-the-same-job-without-slurm).
-  Put `localSlurm/` in front of your `PATH` before starting R.
+R 4.0 or later. The scripts use base R only.
 
 ## Reproducing the figures
 
-All scripts are run from the repository root.
+All scripts are run from the package root. To build Figures 1 to 6:
 
-1. **Tell `config.R` where the run data is.** Whether you downloaded the ensembles or ran
-   them yourself, the locations in the settings section of `config.R` have to be adjusted:
-   - `uncertaintyWD`: the uncertainty analysis working directory. The run folders are
-     expected in its `workOutput/`, e.g.
-     `workOutput/UA-v3-1-2026-09-14-S100000-policy_EMB-ClimateFeedback_On-ClimateSTAOverride_Off/`.
-     The folder names are built from `expIDprePreString`, `numSample`, the policy file and
-     `commonDirStringBit`.
-   - `legacyDataLocation` and `legacyRunDir`: where the v2.1 reference ensemble is.
-   - `localMountPoint`: where a remote file system with the runs is mounted. A path that
-     does not exist on this machine is looked for below it. When you work on the machine
-     the ensembles were run on, the paths are simply used as they are.
-   - For new runs, also `expIDprePreString`, `runHours` and `embRunHOURS`.
-2. **Run everything:**
+```sh
+Rscript runFRIDAv3-1PaperAll.R
+```
 
-   ```sh
-   Rscript runFRIDAv3-1PaperAll.R
-   ```
+It checks that the results of every ensemble are present, builds the figures into
+`figures/multipanel/` and reports ok or FAILED for each script. To produce a single figure,
+run its script, e.g.
 
-   If `uncertaintyWD` is reachable, this first runs `runFRIDAv3-1PaperScenarios.R`. That
-   script copies the scenario files into the `FRIDA-configs` folder of `uncertaintyWD`,
-   submits EMB, and after EMB has finished submits all other scenarios, which reuse EMB's
-   calibration. It stops while runs are still missing or in progress. Re-run it until all
-   runs are complete. The runner then checks that the EMB, v2.1, government investment
-   and insurance results exist, builds Figures 1 to 6 into `figures/multipanel/` and
-   reports ok or FAILED for each script.
-3. If `uncertaintyWD` is not reachable, the runner skips the runs and plots from the
-   results that are available.
-4. To produce individual figures run e.g.
-
-   ```sh
-   Rscript plotFRIDAv3-1PaperFig3.R
-   ```
+```sh
+Rscript plotFRIDAv3-1PaperFig3.R
+```
 
 The time axis and the colour of each ensemble are set once in `config.R` (`figYearStart`,
 `figYearEnd`, `figYearTicks`, `paperCols`), so all figures share them.
+
+## Run digests
+
+The ensembles were run with 100 000 samples each, which leaves about 73 GB of output per
+run. `data/` holds a digest of each run instead, written by `runMakeDigest.R` of
+[WorldTransFrida-Uncertainty](https://github.com/BenjaminBlanz/WorldTransFrida-Uncertainty)
+at commit ae197c9. A digest keeps the run's metadata and top level files, its sample points
+(`samplePoints.csv.gz`), the representative sample (`repSample/`) and its `figures/` folder
+without the images. The figures read only the plot data in
+`figures/CI-plots/completeEquallyWeighted/plotData/`. The per variable output of every
+sample (`detectedParmSpace/`) is left out. `digest.txt` in each digest names the source,
+what was left out and the md5 of each file.
+
+The v3.1 run folders are named
+`UA-v3-1-2026-09-14-S100000-<scenario>-ClimateFeedback_On-ClimateSTAOverride_Off-digest`.
+
+| Digest (`<scenario>`) | Ensemble | Figures |
+|---|---|---|
+| `policy_EMB` | EMB, the FRIDA v3.1 baseline | 2, 3, 4, 5, 6 |
+| `v31Doc_gov_investment_scenario` | Government investment | 6 |
+| `v31Doc_insurance_scenario` | Insurance | 6 |
+| `v31Doc_CCS_c100` | 100 <span>$</span>/tCO2e carbon tax, with CCS | 5 |
+| `v31Doc_NoCCS_c100` | 100 <span>$</span>/tCO2e carbon tax, without CCS | 5 |
+| `UA_EMBv6Try2_nS100000-digest` | FRIDA v2.1 reference | 3, 4 |
+
+The scenario runs reuse the calibration and sample points of EMB, so their
+`samplePoints.csv.gz` are identical.
+
+## Making the runs yourself
+
+The ensembles are made with the FRIDA uncertainty analysis,
+[WorldTransFrida-Uncertainty](https://github.com/BenjaminBlanz/WorldTransFrida-Uncertainty),
+which runs the model, [WorldTransFRIDA](https://github.com/metno/WorldTransFRIDA), through
+the Stella Simulator. Its README explains the setup. The runs are submitted through SLURM
+(the scripts were written for DKRZ Levante), but a cluster is not required. That
+repository has stand-ins for `sbatch`, `squeue` and `scancel` in `localSlurm/` that run
+the same jobs on a single machine, see
+[Running the same job without SLURM](https://github.com/BenjaminBlanz/WorldTransFrida-Uncertainty#running-the-same-job-without-slurm).
+Put `localSlurm/` in front of your `PATH` before starting R.
+
+1. Check out WorldTransFrida-Uncertainty next to this folder, as
+   `../WorldTransFrida-Uncertainty/`, or set `uncertaintyWD` in
+   `runFRIDAv3-1PaperScenarios.R`.
+2. Run `Rscript runFRIDAv3-1PaperScenarios.R`. It copies the scenario files into the
+   `FRIDA-configs` folder of that checkout, submits EMB, and after EMB has finished submits
+   all other scenarios, which reuse EMB's calibration. It stops while runs are still missing
+   or in progress. Re-run it until all runs are complete. Each run's submit call is in the
+   `scenarios` list of `config.R`; the run settings (`numSample`, `expIDprePreString`,
+   `runHours`, `embRunHOURS`) are in its settings section.
+3. Set `dataLocation` in `config.R` to the checkout's `workOutput/`, and
+   `legacyDataLocation` to the folder holding the v2.1 run. `runDir()` takes a run where it
+   exists and its digest otherwise, so the figure scripts then read the runs themselves.
 
 ## Repository layout
 
 | Path | Contents |
 |---|---|
-| `config.R` | Settings (paths, run configuration, time axis, colours) and the scenario list and result paths derived from them. Every script sources it. |
-| `runFRIDAv3-1PaperAll.R` | Runs the scenarios, then builds all paper figures. |
+| `config.R` | Settings (data location, run configuration, time axis, colours) and the scenario list and result paths derived from them. Every script sources it. |
+| `runFRIDAv3-1PaperAll.R` | Builds all paper figures. |
 | `runFRIDAv3-1PaperScenarios.R` | Deploys the scenario files and submits the runs that do not exist yet. |
 | `plotFRIDAv3-1PaperFigN.R` | One script per paper figure, see [Figures](#figures). |
 | `plotOverlayedRunsFun.R` | Draws one time series panel with several ensembles overlaid. |
-| `plotScenarioSliceFun.R` | Draws a scenario family at a fixed year against the swept value. |
 | `ScenarioFiles/` | Policy files of the scenarios. |
-| `data/` | Calibration and observational data, see [Input data](#input-data). |
-
-Two further scripts are not needed for the paper figures. `plotFRIDAv3-1PaperScenarios.R`
-draws an overview of all scenarios; it also writes `figures/multipanel/Figure1.png`, so run
-it before, not after, the paper figures. `runPlotOverlayedRuns.R` is an older overlay
-script that needs `initialise.R` from the uncertainty analysis repository.
+| `data/` | Calibration and observational data, see [Input data](#input-data), and the run digests, see [Run digests](#run-digests). |
 
 ## Input data
 
@@ -146,6 +152,6 @@ Benjamin Blanz
 
 ## License
 
-This repository is licensed under the
+This package is licensed under the
 [Creative Commons Attribution 4.0 International License (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/),
 see [`LICENSE`](LICENSE). If you use it, please cite the paper above.

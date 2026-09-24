@@ -8,6 +8,7 @@ source('plotOverlayedRunsFun.R')
 overlayNames  <- c('v3.1')
 overlayColors <- unname(paperCols[overlayNames])
 dataFolders   <- unname(resultFolders[overlayNames])
+requireResults(dataFolders)
 
 lwd    <- 1.5
 calCol <- 'red'          # the calibration data FRIDA was fitted to

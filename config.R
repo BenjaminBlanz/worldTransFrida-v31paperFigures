@@ -9,13 +9,12 @@
 ##############################################################################
 
 # where things live ####
-# the working directory on the machine that runs the scenarios. On any other
-# machine that tree is reached through localMountPoint instead, see
-# onThisMachine() below
-uncertaintyWD      <- '/work/uc1275/u244021/WorldTransFrida-Uncertainty-FRIDA-development/'
-localMountPoint    <- '/home/benjamin/mnt/levante'
-# the v2.1 reference ensemble, which lives outside uncertaintyWD
-legacyDataLocation <- '/work/mh0033/b383346/Legacy_WorldTransFrida-Uncertainty/workOutput'
+# the folder holding the runs, or their digests, see runDir() below. Set it to
+# the workOutput of a WorldTransFrida-Uncertainty checkout to plot the runs
+# themselves
+dataLocation       <- 'data'
+# the v2.1 reference ensemble, made in another checkout than the v3.1 runs
+legacyDataLocation <- dataLocation
 legacyRunDir       <- 'UA_EMBv6Try2_nS100000'
 # where a run keeps the data the CI plots are made from, within its run directory
 plotDataSubDir     <- file.path('figures', 'CI-plots', 'completeEquallyWeighted', 'plotData')
@@ -30,8 +29,8 @@ varNameExtra       <- '-fit uncertainty-completeEqually-weighted.RDS'
 commonDirStringBit <- '-ClimateFeedback_On-ClimateSTAOverride_Off'
 
 # submit settings ####
-# these files have to be present in the FRIDA-configs folder of uncertaintyWD,
-# runFRIDAv3-1PaperScenarios.R puts the scenario policy files there
+# these files have to be present in the FRIDA-configs folder of the uncertainty
+# checkout, runFRIDAv3-1PaperScenarios.R puts the scenario policy files there
 runHours               <- 2
 embPolicyFile          <- 'policy_EMB.csv'
 climateFeedbackFile    <- 'ClimateFeedback_On.csv'
@@ -51,15 +50,6 @@ embRunHOURS <- 7
 # used in the merge step.
 # Allowed options: 'csv','RDS', or 'both'
 perVarOutputTypes <- 'csv'
-
-# scenario sweeps ####
-# families of scenarios that sweep a single number, here the carbon tax in
-# $/tCO2e that the scenario file ramps to. The capture group picks that number
-# out of the scenario name
-carbonTaxSweepPatterns <- c(
-	'CCS'   = '^v31Doc_CCS_c([0-9]+)$',
-	'NoCCS' = '^v31Doc_NoCCS_c([0-9]+)$'
-)
 
 # data ####
 # the input data the figure scripts read, all of it below this folder
@@ -115,8 +105,7 @@ varOverlayCols <- c('#000000', '#8B4513', '#CC7722')
 ######## derived                                                    ##########
 ##############################################################################
 
-homeWD       <- getwd()
-dataLocation <- file.path(uncertaintyWD, 'workOutput')
+homeWD <- getwd()
 
 # scenarios ####
 scenarios <- list(
@@ -176,13 +165,25 @@ scenarioAreaCols   <- sapply(scenarios, `[[`, 'areaCol')
 scenarioBeautyNames <- sapply(scenarios, `[[`, 'beauty_name')
 
 # result locations ####
-# keeps a path as it is where it exists, and otherwise looks for it below the
-# mount point, so the same config works on the run machine and on a local one
-onThisMachine <- function(path) {
-	if (dir.exists(path)) path else paste0(localMountPoint, path)
+# a run and its digest hold the plot data at the same paths, only the folder
+# name differs. Takes the run where it exists and the digest otherwise, e.g.
+# runDir('UA_EMBv6Try2_nS100000') gives 'data/UA_EMBv6Try2_nS100000-digest'
+runDir <- function(dir, location=dataLocation) {
+	d <- file.path(location, dir)
+	if (dir.exists(d)) d else paste0(d, '-digest')
 }
-plotDataFolder <- function(runDir, location=dataLocation) {
-	file.path(onThisMachine(location), runDir, plotDataSubDir)
+plotDataFolder <- function(dir, location=dataLocation) {
+	file.path(runDir(dir, location), plotDataSubDir)
+}
+
+# stops a figure script whose runs are neither in dataLocation nor digested
+# there, e.g. requireResults(dataFolders)
+requireResults <- function(folders) {
+	missing <- folders[!dir.exists(folders)]
+	if (length(missing) > 0) {
+		stop(sprintf('missing runs, neither the run nor its digest found:\n%s\n',
+								 paste(missing, collapse='\n')), call.=FALSE)
+	}
 }
 
 # the plotData folders the paper figures read, keyed by the overlay names the
@@ -196,24 +197,6 @@ resultFolders <- c(
 	'Gov. Inv.' = plotDataFolder(scenarios[['v31Doc_gov_investment_scenario']]$dir),
 	'Insurance' = plotDataFolder(scenarios[['v31Doc_insurance_scenario']]$dir)
 )
-
-# scenario sweeps ####
-# one table per sweep family, sorted by the swept value. These are deliberately
-# kept out of resultFolders, which runFRIDAv3-1PaperAll.R uses as a hard gate: a
-# sweep that is only partly run should leave gaps in its figure and warn about
-# them, not stop the whole pipeline.
-scenarioSweep <- function(pattern) {
-	sweepNames <- grep(pattern, names(scenarios), value=TRUE)
-	sweepValue <- as.numeric(sub(pattern, '\\1', sweepNames))
-	sweepNames <- sweepNames[order(sweepValue)]
-	data.frame(
-		value     = sort(sweepValue),
-		scenario  = sweepNames,
-		folder    = sapply(sweepNames, function(n) plotDataFolder(scenarios[[n]]$dir)),
-		row.names = NULL, stringsAsFactors = FALSE
-	)
-}
-carbonTaxSweeps <- lapply(carbonTaxSweepPatterns, scenarioSweep)
 
 # calibration data ####
 # read once, keeping only the columns whose header is a year. The row names carry

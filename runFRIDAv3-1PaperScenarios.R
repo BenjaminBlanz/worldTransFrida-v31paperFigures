@@ -1,4 +1,12 @@
+# Submits the runs in config.R to SLURM through a WorldTransFrida-Uncertainty
+# checkout, e.g. on Levante. Run from this folder, again until every run has
+# completed, then set dataLocation in config.R to the checkout's workOutput.
+
 source('config.R')
+
+# the checkout that makes the runs
+uncertaintyWD <- normalizePath('../WorldTransFrida-Uncertainty/', mustWork=TRUE)
+dataLocation  <- file.path(uncertaintyWD, 'workOutput')
 
 # scenario file deployment ####
 # the runs read their policy file from the FRIDA-configs folder of the uncertainty

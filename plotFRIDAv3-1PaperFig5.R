@@ -1,14 +1,12 @@
 source('config.R')
 source('plotOverlayedRunsFun.R')
 
-# the variables of the carbon tax slice figure (FigNotUsed7) as time series:
-# instead of slicing the whole carbon tax sweep at a few years, the 100 $/tCO2e
-# run of each sweep is followed over time next to the EMB baseline.
+# the 100 $/tCO2e run of each carbon tax sweep, with and without CCS, over time
+# next to the EMB baseline.
 
 # overlay config ####
-# the two tax runs are sweep runs and so not part of resultFolders, which
-# runFRIDAv3-1PaperAll.R requires to be complete, so their folders are looked up
-# here. A run without results yet leaves its ensemble out of the panels.
+# the two tax runs are sweep runs and so not part of resultFolders, their
+# folders are looked up here
 overlayScenarios <- c(
 	'EMB'              = 'EMB',
 	'100$ tax w CCS'   = 'v31Doc_CCS_c100',
@@ -17,6 +15,7 @@ overlayScenarios <- c(
 overlayNames  <- names(overlayScenarios)
 overlayColors <- unname(paperCols[overlayNames])
 dataFolders   <- unname(sapply(overlayScenarios, function(s) plotDataFolder(scenarios[[s]]$dir)))
+requireResults(dataFolders)
 
 CIsToPlot      <- c(0.67)
 lwd            <- 1.5
@@ -24,8 +23,7 @@ plt.drawMedian    <- TRUE
 plt.drawCIOutline <- TRUE
 
 # vars ####
-# the rows of FigNotUsed7, in the same order. Unlike there, ylim is given in raw
-# data units, it gets multiplied by scale when plotting
+# ylim is given in raw data units, it gets multiplied by scale when plotting
 #
 # Figure layout:
 # STA   | GDPpp    | recession
@@ -74,10 +72,6 @@ varsToPlot <- list(
 # joint plot ####
 cat('Plotting Figure 5\n')
 setwd(homeWD)
-for (o.i in which(!dir.exists(dataFolders))) {
-	cat(sprintf('WARNING: no results for %s (%s) in\n  %s\n  it is left out of the figure.\n',
-							overlayNames[o.i], overlayScenarios[o.i], dataFolders[o.i]))
-}
 fig.dir  <- file.path('figures', 'multipanel')
 fig.w    <- 7
 fig.h    <- 5

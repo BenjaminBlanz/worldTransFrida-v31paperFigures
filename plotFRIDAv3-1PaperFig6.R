@@ -5,6 +5,7 @@ source('plotOverlayedRunsFun.R')
 overlayNames  <- c('EMB', 'Gov. Inv.', 'Insurance')
 overlayColors <- unname(paperCols[overlayNames])
 dataFolders   <- unname(resultFolders[overlayNames])
+requireResults(dataFolders)
 
 CIsToPlot      <- c(0.67)
 lwd            <- 1.5

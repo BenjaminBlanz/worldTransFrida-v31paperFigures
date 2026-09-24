@@ -1,12 +1,8 @@
-# builds the paper figures: first the scenario runs, then every paper figure.
-#
-# The runs rely on the uncertainty analysis scripts which assume the presence of a 
-# SLURM scheduler on the system. The location of the uncertainty script has to be
-# specified in the config.R
+# builds the paper figures from the runs, or their digests, in dataLocation, see
+# config.R. The runs themselves are made with runFRIDAv3-1PaperScenarios.R.
 
 source('config.R')
 
-scenarioScript <- 'runFRIDAv3-1PaperScenarios.R'
 # the paper figures, numbered as in the paper
 figureScripts  <- sort(list.files('.', pattern='^plotFRIDAv3-1PaperFig[0-9]+\\.R$'))
 
@@ -24,28 +20,8 @@ runScript <- function(f) {
 	source(f)
 }
 
-# scenario runs ####
-cat('=== scenario runs\n')
-if (dir.exists(uncertaintyWD)) {
-	cat(sprintf('%s\n', scenarioScript))
-	scenarioErr <- tryCatch({
-		runScript(scenarioScript)
-		NULL
-	}, error=function(e) conditionMessage(e))
-	if (!is.null(scenarioErr)) {
-		# the runs are not all through yet. The scenario script's own message says
-		# what to do, so it stands and nothing gets plotted from incomplete output.
-		stop(scenarioErr, call.=FALSE)
-	}
-} else {
-	cat(sprintf(paste0('WARNING: uncertaintyWD %s is not reachable, so this is not the\n',
-										 '  machine the scenario runs happen on. Skipping %s and\n',
-										 '  continuing with the results that are already available.\n'),
-							uncertaintyWD, scenarioScript))
-}
-
 # results ####
-cat('\n=== results\n')
+cat('=== results\n')
 # v3.1 and EMB are the same run, so report each distinct folder once
 resultPaths      <- unique(unname(resultFolders))
 resultLabels     <- sapply(resultPaths, function(p) {
@@ -58,10 +34,8 @@ for (r.i in seq_along(resultPaths)) {
 }
 if (!all(resultsAvailable)) {
 	stop(sprintf(paste0('results for %s are not available.\n',
-											'Make sure uncertaintyWD (%s) is present on this machine, or mounted\n',
-											'below %s, and that the scenarios have been run with %s.\n'),
-							 paste(resultLabels[!resultsAvailable], collapse=', '),
-							 uncertaintyWD, localMountPoint, scenarioScript),
+											'Neither the runs nor their digests are in %s.\n'),
+							 paste(resultLabels[!resultsAvailable], collapse=', '), dataLocation),
 			 call.=FALSE)
 }
 
