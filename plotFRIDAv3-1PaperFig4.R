@@ -18,19 +18,19 @@ varsToPlot <- list(
 		name  = 'Burned Area due to Climate Change',
 		unit  = 'MHa/year',
 		scale = 1,
-		ylim  = c(0, 300)
+		ylim  = c(0, 600)
 	),
 	transportation_energy_demand_average_daily_demand_per_capita = list(
 		name  = 'Transportation Energy Demand',
 		unit  = 'kWh/person/day',
 		scale = 1e3,
-		ylim  = c(0, 20)*1e-3
+		ylim  = c(0, 40)*1e-3
 	),
 	wind_energy_wind_energy_full_load_hours = list(
 		name  = 'Wind Energy Full Load Hours',
 		unit  = 'hours/year',
 		scale = 1,
-		ylim  = c(1750, 1800)
+		ylim  = c(1720, 1800)
 	),
 	demographics_life_expectancy = list(
 		name  = 'Life Expectancy',
